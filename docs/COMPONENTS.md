@@ -155,7 +155,7 @@ Runtime jar/data:
 |---|---|
 | `main.go` | Fiber app, API handlers, local player metadata, cookie auth, file-backed log tailing |
 | `proxy_client.go` | Client for the token-protected Velocity plugin API |
-| `static/index.html` | CreeperPanel dashboard |
+| `static/index.html` | Indraprastha Commons dashboard |
 | `Dockerfile` | Build and runtime image |
 
 ### Important behavior

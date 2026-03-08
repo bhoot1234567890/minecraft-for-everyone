@@ -1047,7 +1047,7 @@ func main() {
 	startLogReader()
 
 	app := fiber.New(fiber.Config{
-		AppName:               "CreeperPanel",
+		AppName:               "Indraprastha Commons",
 		DisableStartupMessage: false,
 		EnablePrintRoutes:     false,
 	})

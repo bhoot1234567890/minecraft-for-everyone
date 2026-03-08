@@ -12,7 +12,7 @@ This document lists all files that need to be updated when changing the server n
 |------|------|---------|-----------|
 | `whitelist-manager/main.go` | 1001 | `AppName: "CreeperPanel"` | `AppName: "Indraprastha Commons"` |
 | `whitelist-manager/static/index.html` | 46 | `<h2 class="...">CreeperPanel</h2>` | `<h2 class="...">Indraprastha Commons</h2>` |
-| `whitelist-manager/static/index.html` | 83 | `Survival Hub` | `Indraprastha Commons` |
+| `whitelist-manager/static/index.html` | 83, 893, 905 | `Survival Hub` | `Indraprastha Commons` |
 | `whitelist-manager/static/index.html` | 286 | `© 2025 CreeperPanel Admin Dashboard` | `© 2025 Indraprastha Commons` |
 | `whitelist-manager/static/index.html` | 373 | `Login to CreeperPanel` | `Login to Indraprastha Commons` |
 | `whitelist-manager/ui_team_prototype/index.html` | 43, 250 | CreeperPanel references | Indraprastha Commons (optional - prototype folder) |
@@ -42,6 +42,8 @@ This document lists all files that need to be updated when changing the server n
 | `proxy-data/velocity.toml` | 6 | `motd = "<green>Minecraft Server Proxy</green>"` | `motd = "<green>Indraprastha Commons</green>"` |
 | `proxy-data/config/Geyser-Velocity/config.yml` | 34 | `motd1: "§aMinecraft Server"` | `motd1: "§aIndraprastha Commons"` |
 | `proxy-data/config/Geyser-Velocity/config.yml` | 35 | `motd2: "§7Bedrock & Java Crossplay"` | Keep or update |
+| `limbo-data/server.toml` | 42 | `message_of_the_day = "A Minecraft Server"` | `message_of_the_day = "Indraprastha Commons"` |
+| `docker-compose.yml` | 12-13 | legacy `Cracked Minecraft Server` branding | `Indraprastha Commons` branding |
 
 ---
 
@@ -52,7 +54,7 @@ This document lists all files that need to be updated when changing the server n
 | `docs/HOW_TO_PLAY.md` | 94, 105 | `Server Name: Our Minecraft Server` | `Server Name: Indraprastha Commons` |
 | `docs/HOW_TO_PLAY.md` | 1 | `# How to Play - Minecraft Server Guide` | `# How to Play - Indraprastha Commons` |
 | `docs/ARCHITECTURE.md` | 1 | `# Minecraft Server Architecture` | `# Indraprastha Commons Architecture` |
-| `docs/COMPONENTS.md` | 119 | `CreeperPanel dashboard` | `Indraprastha Commons dashboard` |
+| `docs/COMPONENTS.md` | 158 | `CreeperPanel dashboard` | `Indraprastha Commons dashboard` |
 
 ---
 
@@ -72,7 +74,7 @@ After making edits, rebuild and restart:
 
 ```bash
 docker compose -f docker-compose.proxy.yml build whitelist-manager
-docker compose -f docker-compose.proxy.yml up -d --force-recreate whitelist-manager velocity main
+docker compose -f docker-compose.proxy.yml up -d --force-recreate whitelist-manager velocity main limbo
 ```
 
 ---
@@ -81,12 +83,12 @@ docker compose -f docker-compose.proxy.yml up -d --force-recreate whitelist-mana
 
 | Category | File Count |
 |----------|------------|
-| Dashboard (Go + HTML) | 2 files |
-| Landing Page | 1 file |
-| Server Config (MOTD, server.properties) | 4 files |
-| Docker Compose | 1 file |
-| Documentation | 3 files |
-| **Total** | **11 files** |
+| Dashboard (Go + HTML) | 4 files |
+| Landing / Play pages | 2 files |
+| Server Config (MOTD, server.properties) | 6 files |
+| Docker Compose | 2 files |
+| Documentation | 4 files |
+| **Total** | **18 files** |
 
 ---
 

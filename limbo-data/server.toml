@@ -39,7 +39,7 @@ teleport_message = "<red>You have reached the bottom of the world.</red>"
 [server_list]
 reply_to_status = true
 max_players = 20
-message_of_the_day = "A Minecraft Server"
+message_of_the_day = "Indraprastha Commons"
 show_online_player_count = true
 server_icon = "server-icon.png"
 

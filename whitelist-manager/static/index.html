@@ -43,7 +43,7 @@
 <div class="size-8 bg-primary rounded flex items-center justify-center text-background-dark">
 <span class="material-symbols-outlined font-bold">view_in_ar</span>
 </div>
-<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">CreeperPanel</h2>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">Indraprastha Commons</h2>
 </div>
 <nav class="hidden md:flex items-center gap-6">
         <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('dashboard'); return false;" id="nav-dashboard">Dashboard</a>
@@ -81,7 +81,7 @@
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
 <div class="flex flex-col gap-1">
 <h1 id="accessSectionTitle" class="text-slate-900 dark:text-slate-100 text-3xl font-black leading-tight tracking-tight">Whitelist Management</h1>
-<p id="accessSectionDescription" class="text-slate-500 dark:text-slate-400 text-base font-normal">Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Survival Hub</span> server.</p>
+<p id="accessSectionDescription" class="text-slate-500 dark:text-slate-400 text-base font-normal">Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Indraprastha Commons</span> server.</p>
 </div>
 <div class="flex gap-2">
 <button onclick="loadDashboard()" class="flex items-center justify-center gap-2 rounded-lg bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-sm font-bold transition-all shadow-lg shadow-green-600/20">
@@ -351,7 +351,7 @@
 </div>
 </main>
 <footer class="border-t border-primary/10 py-6 px-10 text-center">
-<p class="text-xs text-slate-500 dark:text-slate-400">© 2025 CreeperPanel Admin Dashboard • Connected to <span class="text-primary">02031998.xyz</span></p>
+<p class="text-xs text-slate-500 dark:text-slate-400">© 2025 Indraprastha Commons • Connected to <span class="text-primary">02031998.xyz</span></p>
 </footer>
 </div>
 </div>
@@ -462,7 +462,7 @@ function showLoginModal() {
     modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
     modal.innerHTML = `
         <div class="bg-white dark:bg-primary/5 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6 text-center">Login to CreeperPanel</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center">Login to Indraprastha Commons</h2>
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-2">Username</label>
@@ -890,7 +890,7 @@ async function loadProxyStatusSummary() {
         if (hybridAuthMode) {
             hybridBanner?.classList.remove('hidden');
             if (sectionTitle) sectionTitle.textContent = 'Player Access Management';
-            if (sectionDescription) sectionDescription.innerHTML = 'Hybrid auth is live for the <span class="text-primary font-semibold">Survival Hub</span>: premium Java joins directly, cracked Java authenticates in PicoLimbo, and Bedrock keeps using Floodgate.';
+            if (sectionDescription) sectionDescription.innerHTML = 'Hybrid auth is live for the <span class="text-primary font-semibold">Indraprastha Commons</span>: premium Java joins directly, cracked Java authenticates in PicoLimbo, and Bedrock keeps using Floodgate.';
             if (addPlayerBtn) addPlayerBtn.classList.add('hidden');
             if (totalPlayersLabel) totalPlayersLabel.textContent = 'Tracked Players';
             if (quickGuideTitle) quickGuideTitle.textContent = 'Hybrid Auth Guide';
@@ -902,7 +902,7 @@ async function loadProxyStatusSummary() {
 
         hybridBanner?.classList.add('hidden');
         if (sectionTitle) sectionTitle.textContent = 'Whitelist Management';
-        if (sectionDescription) sectionDescription.innerHTML = 'Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Survival Hub</span> server.';
+        if (sectionDescription) sectionDescription.innerHTML = 'Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Indraprastha Commons</span> server.';
         if (addPlayerBtn) addPlayerBtn.classList.remove('hidden');
         if (totalPlayersLabel) totalPlayersLabel.textContent = 'Total Whitelisted';
         if (quickGuideTitle) quickGuideTitle.textContent = 'Quick Whitelist Guide';

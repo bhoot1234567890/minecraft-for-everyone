@@ -3,7 +3,7 @@
 bind = "0.0.0.0:25577"
 # What should be the MOTD? This gets displayed when the player adds your server to
 # their server list. Only MiniMessage format is accepted.
-motd = "<green>Minecraft Server Proxy</green>"
+motd = "<green>Indraprastha Commons</green>"
 # Player limit (-1 = unlimited)
 show-max-players = 100
 # Hybrid auth mode:

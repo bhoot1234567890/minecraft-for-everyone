@@ -1,4 +1,4 @@
-# Minecraft Server Architecture
+# Indraprastha Commons Architecture
 
 ## Overview
 

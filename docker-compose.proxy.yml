@@ -73,8 +73,8 @@ services:
       TYPE: PAPER
       VERSION: "1.21.11"
       ONLINE_MODE: "false"  # Proxy handles auth
-      SERVER_NAME: "Main Survival"
-      MOTD: "Welcome to the Main Server!"
+      SERVER_NAME: "Indraprastha Commons"
+      MOTD: "Welcome to Indraprastha Commons!"
       MAX_PLAYERS: 20
       MODE: survival
       DIFFICULTY: normal

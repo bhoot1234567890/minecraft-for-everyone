@@ -31,7 +31,7 @@ scoreboard:
 
 # Custom MOTD
 motd:
-  motd1: "§aMinecraft Server"
+  motd1: "§aIndraprastha Commons"
   motd2: "§7Bedrock & Java Crossplay"
 
 # Metrics

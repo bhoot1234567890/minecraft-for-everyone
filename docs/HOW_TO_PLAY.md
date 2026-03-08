@@ -1,4 +1,4 @@
-# How to Play - Minecraft Server Guide
+# How to Play - Indraprastha Commons
 
 **Any device. Any version.** Play on PC, Mac, Linux, Mobile, Console, or Windows - if it runs Minecraft, you can play!
 
@@ -71,7 +71,7 @@ Bedrock Edition runs on phones, tablets, consoles, and Windows 10/11.
 1. From the main menu, click **Multiplayer**
 2. Click **Add Server**
 3. Enter:
-   - **Server Name:** `Our Minecraft Server`
+   - **Server Name:** `Indraprastha Commons`
    - **Server Address:** `02031998.xyz`
 4. Click **Done**
 5. Click the server in your list, then click **Join Server**
@@ -82,7 +82,7 @@ Bedrock Edition runs on phones, tablets, consoles, and Windows 10/11.
 2. Click the **Servers** tab
 3. Scroll down and click **Add Server**
 4. Enter:
-   - **Server Name:** `Our Minecraft Server`
+   - **Server Name:** `Indraprastha Commons`
    - **Server Address:** `02031998.xyz`
    - **Port:** `19132`
 5. Click **Save**

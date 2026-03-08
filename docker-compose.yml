@@ -9,8 +9,8 @@ services:
       TYPE: "PAPER"
       VERSION: "1.21.11"
       ONLINE_MODE: "FALSE"
-      SERVER_NAME: "Cracked Minecraft Server"
-      MOTD: "Welcome to the Cracked Server!"
+      SERVER_NAME: "Indraprastha Commons"
+      MOTD: "Welcome to Indraprastha Commons!"
       MAX_PLAYERS: 20
       SEED: ""
       WORLD: ""
