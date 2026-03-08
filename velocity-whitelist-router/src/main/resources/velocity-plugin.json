@@ -1,0 +1,8 @@
+{
+  "id": "whitelist-router",
+  "name": "WhitelistRouter",
+  "version": "1.0.0",
+  "description": "Routes players based on whitelist, captures Bedrock XUIDs",
+  "authors": ["Minecraft Admin"],
+  "main": "com.minecraft.router.WhitelistRouterPlugin"
+}

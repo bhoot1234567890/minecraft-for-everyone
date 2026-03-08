@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<title>Minecraft Admin | Whitelist &amp; User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d411",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">view_in_ar</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">CreeperPanel</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('dashboard'); return false;">Dashboard</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#" onclick="showSection('whitelist'); return false;" id="nav-whitelist">Whitelist</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('logs'); return false;" id="nav-logs">Server Logs</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4">
+<div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="text-xs font-bold text-primary uppercase tracking-wider">Server Online</span>
+<span id="serverPlayerCount" class="text-xs text-slate-500 dark:text-slate-400 border-l border-primary/20 pl-2">Loading...</span>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded h-10 w-10 bg-primary/10 hover:bg-primary/20 text-slate-700 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded h-10 w-10 bg-primary/10 hover:bg-primary/20 text-slate-700 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/30" data-alt="User profile avatar of Steve skin" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCAP09zBr9eeox7vBJbfurX-C0e5aaiO7dF-C8-77mpiRdXAOlDoXdERs-YxLL1CD0s7Z72oNCELhOrvVjotBjQ9qu0AB8QCnr8emeOX19tRdrXk5olT1CCPA68Dxn9dmF4BuazHpv2TJpE8JXa00bLN23kThP-8GddqKJ-0aexM1eAvrPjswl3IgeJEhhdCdw8E7Kl5s5Qgi_qV1KTj4x7yHZBFlkTP-euJftBA1BuMFlO5w-Dyq3OQX34h6ku5J1qDFcNGReGy1s");'></div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 px-6 md:px-10 gap-8">
+
+<!-- Whitelist Section -->
+<div id="section-whitelist" class="section-content">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="flex flex-col gap-1">
+<h1 id="accessSectionTitle" class="text-slate-900 dark:text-slate-100 text-3xl font-black leading-tight tracking-tight">Whitelist Management</h1>
+<p id="accessSectionDescription" class="text-slate-500 dark:text-slate-400 text-base font-normal">Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Survival Hub</span> server.</p>
+</div>
+<div class="flex gap-2">
+<button onclick="loadDashboard()" class="flex items-center justify-center gap-2 rounded-lg bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-sm font-bold transition-all shadow-lg shadow-green-600/20">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span>Refresh View</span>
+</button>
+<button id="addPlayerBtn" class="flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-background-dark px-6 py-3 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">person_add</span>
+<span>Whitelist New Player</span>
+</button>
+</div>
+</div>
+<div id="hybridAuthBanner" class="hidden rounded-xl border border-sky-500/30 bg-sky-50 dark:bg-sky-900/10 p-6">
+<div class="flex items-start gap-3">
+<div class="size-10 rounded-lg bg-sky-500/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-sky-500">shield_lock</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Hybrid Auth Active</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Premium Java players go straight to Main, cracked Java players authenticate in PicoLimbo with <code class="bg-sky-500/10 px-1.5 py-0.5 rounded text-sky-600 dark:text-sky-300 font-mono">/register</code> or <code class="bg-sky-500/10 px-1.5 py-0.5 rounded text-sky-600 dark:text-sky-300 font-mono">/login</code>, and Bedrock keeps using Floodgate/XUID. The old whitelist controls are now legacy/admin-only.</p>
+</div>
+</div>
+</div>
+<div id="openModeCard" class="rounded-xl border border-amber-500/30 bg-amber-50 dark:bg-amber-900/10 p-6">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="size-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-amber-500">bolt</span>
+</div>
+<div>
+<h3 id="openModeTitle" class="text-lg font-bold text-slate-900 dark:text-slate-100">Open Mode Session</h3>
+<p id="openModeDescription" class="text-sm text-slate-600 dark:text-slate-400">When enabled, first-time visitors are auto-whitelisted at the proxy and sent straight to the Main server instead of PicoLimbo.</p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center gap-3">
+<span id="openModeBadge" class="inline-flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Loading...</span>
+<button id="openModeToggleBtn" onclick="toggleOpenMode()" class="rounded-lg bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 text-sm font-bold transition-colors">Loading...</button>
+</div>
+</div>
+<p id="openModeMeta" class="mt-3 text-xs text-slate-500 dark:text-slate-400">Checking current open mode state...</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p id="totalPlayersLabel" class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Total Whitelisted</p>
+<div class="flex items-baseline gap-2">
+<p id="totalWhitelisted" class="text-slate-900 dark:text-slate-100 text-3xl font-bold">-</p>
+<p class="text-primary text-sm font-medium">&nbsp;</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Active Bans</p>
+<div class="flex items-baseline gap-2">
+<p id="activeBans" class="text-slate-900 dark:text-slate-100 text-3xl font-bold">-</p>
+<p class="text-red-500 text-sm font-medium">&nbsp;</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Queue Capacity</p>
+<div class="flex items-baseline gap-2">
+<p id="queueCapacity" class="text-slate-900 dark:text-slate-100 text-3xl font-bold">0%</p>
+<div class="flex-1 h-2 bg-primary/20 rounded-full overflow-hidden ml-4">
+<div id="queueCapacityBar" class="bg-primary h-full w-[0%]"></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Pending Bedrock Players Section -->
+<div id="pendingPlayersSection" class="rounded-xl border border-purple-500/30 bg-purple-50 dark:bg-purple-900/10 p-6 hidden">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-purple-500">pending</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Pending Bedrock Players</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Players waiting for manual review or proxy-side approval</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button onclick="showAddPendingModal()" class="flex items-center gap-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>Add Player</span>
+</button>
+</div>
+</div>
+<div id="pendingPlayersList" class="space-y-2">
+<!-- Pending players will be loaded here -->
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-primary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 text-base border-none rounded-xl bg-white dark:bg-primary/5 ring-1 ring-primary/10 focus:ring-2 focus:ring-primary focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-slate-100 shadow-sm transition-all" placeholder="Search by username or UUID..." type="text"/>
+</div>
+<div class="overflow-hidden rounded-xl bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 dark:bg-primary/10 text-slate-600 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+<th class="px-6 py-4">Player</th>
+<th class="px-6 py-4">UUID</th>
+<th class="px-6 py-4">Last Seen</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+</thead>
+<tbody class="divide-y divide-primary/10">
+<tr id="loadingRow">
+<td colspan="5" class="px-6 py-12 text-center text-slate-500">
+<span class="material-symbols-outlined text-4xl mb-4 animate-spin">refresh</span>
+<p>Loading players...</p>
+</td>
+</tr>
+</tbody>
+</div>
+<div class="px-6 py-4 bg-primary/5 dark:bg-primary/10 flex items-center justify-between">
+<p class="text-xs text-slate-500 dark:text-slate-400">Showing 1 to 4 of 1,428 players</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-background-dark border border-primary/20 text-slate-500 disabled:opacity-50">Previous</button>
+<button class="px-3 py-1 text-xs font-bold rounded bg-primary text-background-dark">1</button>
+<button class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-background-dark border border-primary/20 text-slate-700 dark:text-slate-300">2</button>
+<button class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-background-dark border border-primary/20 text-slate-700 dark:text-slate-300">Next</button>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-xl border border-primary/10 bg-primary/5 p-6 flex flex-col md:flex-row items-center gap-6">
+<div class="size-16 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">info</span>
+</div>
+<div class="flex flex-col gap-1 flex-1 text-center md:text-left">
+<h3 id="quickGuideTitle" class="text-lg font-bold text-slate-900 dark:text-slate-100">Quick Whitelist Guide</h3>
+<p id="quickGuideText" class="text-sm text-slate-600 dark:text-slate-400">You can also whitelist players directly from the in-game console using <code class="bg-primary/10 px-1.5 py-0.5 rounded text-primary font-mono">/whitelist add [username]</code>. This dashboard syncs instantly with your server instance.</p>
+</div>
+<button class="whitespace-nowrap rounded bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 text-sm font-bold transition-colors">
+                            View Documentation
+                        </button>
+</div>
+</div>
+</div>
+
+<!-- Server Logs Section -->
+<div id="section-logs" class="section-content hidden">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black leading-tight tracking-tight">Server Logs</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal">Real-time Minecraft server logs with live streaming.</p>
+</div>
+<div class="flex gap-2">
+<button onclick="clearLogs()" class="flex items-center justify-center gap-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span>Clear Display</span>
+</button>
+<button onclick="toggleLogScroll()" id="scrollToggle" class="flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-background-dark px-4 py-2 text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-[18px]" id="scrollIcon">arrow_downward</span>
+<span id="scrollText">Auto-scroll: ON</span>
+</button>
+</div>
+</div>
+
+<!-- Log Filters -->
+<div class="flex flex-wrap gap-2 mb-4">
+<button onclick="filterLogs('ALL')" class="log-filter active px-3 py-1.5 text-xs font-bold rounded-lg bg-primary text-background-dark" data-filter="ALL">All</button>
+<button onclick="filterLogs('INFO')" class="log-filter px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300" data-filter="INFO">INFO</button>
+<button onclick="filterLogs('WARN')" class="log-filter px-3 py-1.5 text-xs font-bold rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400" data-filter="WARN">WARN</button>
+<button onclick="filterLogs('ERROR')" class="log-filter px-3 py-1.5 text-xs font-bold rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" data-filter="ERROR">ERROR</button>
+<button onclick="filterLogs('DEBUG')" class="log-filter px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300" data-filter="DEBUG">DEBUG</button>
+</div>
+
+<!-- Logs Container -->
+<div class="rounded-xl bg-slate-950 border border-primary/10 shadow-sm overflow-hidden">
+<div class="bg-slate-900 px-4 py-2 border-b border-primary/10 flex items-center gap-2">
+<span class="material-symbols-outlined text-green-500 text-[18px]">circle</span>
+<span class="text-xs text-slate-400 font-medium">Live logs from the main Paper server</span>
+<span id="logStatus" class="ml-auto text-xs text-slate-500">Connecting...</span>
+</div>
+<div id="logsContainer" class="font-mono text-xs p-4 h-[600px] overflow-y-auto bg-slate-950 text-slate-300 space-y-1">
+<div class="text-slate-500 text-center py-8">
+<span class="material-symbols-outlined text-4xl mb-2 animate-spin">refresh</span>
+<p>Connecting to log stream...</p>
+</div>
+</div>
+</div>
+
+<div class="rounded-xl border border-primary/10 bg-primary/5 p-6 flex flex-col md:flex-row items-center gap-6">
+<div class="size-16 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">terminal</span>
+</div>
+<div class="flex flex-col gap-1 flex-1 text-center md:text-left">
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Live Server Logs</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Real-time log streaming from your Minecraft server. Logs are updated automatically as they appear. Use the filters above to focus on specific log levels.</p>
+</div>
+</div>
+</div>
+
+</div>
+</main>
+<footer class="border-t border-primary/10 py-6 px-10 text-center">
+<p class="text-xs text-slate-500 dark:text-slate-400">© 2025 CreeperPanel Admin Dashboard • Connected to <span class="text-primary">02031998.xyz</span></p>
+</footer>
+</div>
+</div>
+</body></html><script>
+// API Configuration
+const API_BASE = '/api';
+
+// Auth State
+let isAuthenticated = false;
+let openModeEnabled = false;
+let hybridAuthMode = false;
+
+// Logs State
+let eventSource = null;
+let autoScroll = true;
+let currentFilter = 'ALL';
+let logEntries = [];
+
+// Helper function to get auth headers
+function getAuthHeaders() {
+    return { 'Content-Type': 'application/json' };
+}
+
+// Utility Functions
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-lg z-50 flex items-center gap-3 transition-all transform translate-x-full ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`;
+    notification.innerHTML = `
+        <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : 'error'}</span>
+        <span class="font-medium">${message}</span>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    
+    if (diff < 60000) return 'Just now';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+    if (diff < 604800000) return `${Math.floor(diff / 86400000)} days ago`;
+    return date.toLocaleDateString();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Authentication
+async function checkAuth() {
+    try {
+        const response = await fetch(`${API_BASE}/check-auth`);
+        const data = await response.json();
+        isAuthenticated = data.authenticated;
+        return data.authenticated;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function ensureAuth() {
+    if (!(await checkAuth())) {
+        showLoginModal();
+        return false;
+    }
+    return true;
+}
+
+function showLoginModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-primary/5 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-6 text-center">Login to CreeperPanel</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Username</label>
+                    <input type="text" id="loginUsername" class="w-full px-4 py-3 rounded-xl border border-primary/20 focus:ring-2 focus:ring-primary focus:outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 rounded-xl border border-primary/20 focus:ring-2 focus:ring-primary focus:outline-none" required>
+                </div>
+                <button type="submit" class="w-full bg-primary text-background-dark font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.querySelector('#loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        try {
+            const response = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                isAuthenticated = true;
+                modal.remove();
+                showNotification('Login successful!');
+                loadDashboard();
+            } else {
+                showNotification(data.error || 'Login failed', 'error');
+            }
+        } catch (error) {
+            showNotification('Connection error', 'error');
+        }
+    });
+}
+
+// Dashboard Functions
+let currentPage = 1;
+let currentSearch = '';
+
+async function loadStats() {
+    try {
+        const response = await fetch(`${API_BASE}/stats`, {
+            headers: getAuthHeaders()
+        });
+        const stats = await response.json();
+
+        // Update stats cards
+        const totalWhitelisted = document.getElementById('totalWhitelisted');
+        if (totalWhitelisted) totalWhitelisted.textContent = stats.totalWhitelisted.toLocaleString();
+
+        const activeBans = document.getElementById('activeBans');
+        if (activeBans) activeBans.textContent = stats.activeBans;
+
+        const queueCapacity = document.getElementById('queueCapacity');
+        if (queueCapacity) queueCapacity.textContent = `${Math.round(stats.queueCapacity)}%`;
+
+        const queueCapacityBar = document.getElementById('queueCapacityBar');
+        if (queueCapacityBar) queueCapacityBar.style.width = `${stats.queueCapacity}%`;
+
+        // Update server status player count
+        const serverPlayerCount = document.getElementById('serverPlayerCount');
+        if (serverPlayerCount) {
+            serverPlayerCount.textContent = `${stats.onlinePlayers} / ${stats.maxPlayers} Players`;
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+async function loadPlayers() {
+    try {
+        const response = await fetch(`${API_BASE}/players?page=${currentPage}&pageSize=10&search=${encodeURIComponent(currentSearch)}`, {
+            headers: getAuthHeaders()
+        });
+        const result = await response.json();
+        
+        const tbody = document.querySelector('tbody');
+        if (!tbody) return;
+        
+        if (result.data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                        <span class="material-symbols-outlined text-4xl mb-2">person_off</span>
+                        <p>No players found</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        tbody.innerHTML = result.data.map(player => `
+            <tr class="hover:bg-primary/5 transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <img class="size-10 rounded-md bg-background-light dark:bg-background-dark" 
+                             src="${player.avatarUrl}" 
+                             alt="${escapeHtml(player.name)}" 
+                             onerror="this.src='https://mc-heads.net/avatar/${escapeHtml(player.name)}/40'">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-slate-900 dark:text-slate-100">${escapeHtml(player.name)}</span>
+                            <span class="text-xs ${player.rank === 'Administrator' ? 'text-primary font-medium' : 'text-slate-500 dark:text-slate-400'}">${escapeHtml(player.rank)}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">
+                    ${player.uuid.substring(0, 12)}...
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                    ${formatDate(player.lastSeen)}
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center rounded-full ${player.status === 'online' ? 'bg-primary/20 text-primary' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'} px-2.5 py-0.5 text-xs font-bold">
+                            ${player.status === 'online' ? 'Online' : 'Offline'}
+                        </span>
+                        ${!player.active ? '<span class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2.5 py-0.5 text-xs font-bold">Inactive</span>' : ''}
+                        <span class="inline-flex items-center rounded-full ${player.platform === 'bedrock' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : player.platform === 'both' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'} px-2 py-0.5 text-xs font-medium">
+                            ${player.platform === 'bedrock' ? '📱 Bedrock' : player.platform === 'both' ? '🎮 Both' : '☕ Java'}
+                        </span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <div class="flex justify-end gap-2">
+                        <button onclick="togglePlayerStatus('${escapeHtml(player.name)}', '${player.status}')" class="p-2 hover:bg-blue-500/20 rounded-lg ${player.status === 'online' ? 'text-blue-500' : 'text-slate-400'} transition-colors" title="Toggle Online/Offline">
+                            <span class="material-symbols-outlined text-[20px]">${player.status === 'online' ? 'cloud' : 'cloud_off'}</span>
+                        </button>
+                        <button onclick="promotePlayer('${escapeHtml(player.name)}')" class="p-2 hover:bg-primary/20 rounded-lg text-primary transition-colors" title="Promote">
+                            <span class="material-symbols-outlined text-[20px]">upgrade</span>
+                        </button>
+                        ${player.active ?
+                            `<button onclick="deactivatePlayer('${escapeHtml(player.name)}')" class="p-2 hover:bg-yellow-500/20 rounded-lg text-yellow-600 transition-colors" title="Deactivate">
+                                <span class="material-symbols-outlined text-[20px]">block</span>
+                            </button>` :
+                            `<button onclick="activatePlayer('${escapeHtml(player.name)}')" class="p-2 hover:bg-green-500/20 rounded-lg text-green-600 transition-colors" title="Activate">
+                                <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                            </button>`
+                        }
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Update pagination
+        const paginationInfo = document.querySelector('.px-6.py-4.bg-primary\\/5 p');
+        if (paginationInfo) {
+            paginationInfo.textContent = `Showing ${result.page * result.pageSize - result.pageSize + 1} to ${Math.min(result.page * result.pageSize, result.total)} of ${result.total} players`;
+        }
+    } catch (error) {
+        console.error('Error loading players:', error);
+        showNotification('Failed to load players', 'error');
+    }
+}
+
+async function addPlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/players`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ name })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showNotification(`Added ${name} to whitelist!`);
+            loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to add player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function removePlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    if (!confirm(`Are you sure you want to permanently remove ${name} from the whitelist?`)) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/players/${name}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`${name} has been removed from the whitelist`);
+            loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to remove player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function kickPlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    const reason = prompt('Enter reason for kicking (optional):', 'Kicked by administrator');
+    if (reason === null) return;
+
+    try {
+        const url = reason
+            ? `${API_BASE}/players/${name}/kick?reason=${encodeURIComponent(reason)}`
+            : `${API_BASE}/players/${name}/kick`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`${name} has been kicked from the server`);
+            await loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to kick player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function deactivatePlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    if (!confirm(`Deactivate ${name}? They will not be able to join the server until reactivated.`)) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/players/${name}/deactivate`, {
+            method: 'PUT',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`${name} has been deactivated`);
+            await loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to deactivate player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function activatePlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/players/${name}/activate`, {
+            method: 'PUT',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`${name} has been activated`);
+            await loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to activate player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function syncWhitelist(event) {
+    if (!(await ensureAuth())) return;
+
+    // Handle both event object and direct calls
+    let btn;
+    if (event && event.currentTarget) {
+        btn = event.currentTarget;
+    } else if (event && event.target) {
+        btn = event.target.closest('button');
+    } else {
+        // Fallback: find button by class
+        btn = document.querySelector('button[class*="bg-green-600"]');
+    }
+
+    if (!btn) {
+        showNotification('Error: Button not found', 'error');
+        return;
+    }
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span>Syncing...</span>';
+
+    try {
+        const response = await fetch(`${API_BASE}/whitelist/sync`, {
+            method: 'POST',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`Whitelist synced! ${data.count} players are now whitelisted on the server.`);
+            await loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to sync whitelist', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+async function removePlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    if (!confirm(`Remove ${name} from the whitelist?`)) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/players/${name}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`Removed ${name} from whitelist!`);
+            await loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to remove player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function promotePlayer(name) {
+    if (!(await ensureAuth())) return;
+
+    const newRank = prompt(`Enter new rank for ${name}:\n\nOptions: Administrator, Moderator, Member`);
+    if (!newRank) return;
+
+    const validRanks = ['Administrator', 'Moderator', 'Member'];
+    if (!validRanks.includes(newRank)) {
+        showNotification('Invalid rank. Use: Administrator, Moderator, or Member', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/players/${name}/rank`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ rank: newRank })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`Promoted ${name} to ${newRank}!`);
+            await loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to promote player', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function togglePlayerStatus(name, currentStatus) {
+    if (!(await ensureAuth())) return;
+
+    const newStatus = currentStatus === 'online' ? 'offline' : 'online';
+
+    try {
+        const response = await fetch(`${API_BASE}/players/${name}/status`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification(`${name} is now ${newStatus}!`);
+            loadDashboard();
+        } else {
+            showNotification(data.error || 'Failed to update status', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function loadDashboard() {
+    await loadProxyStatusSummary();
+    await Promise.all([
+        loadStats(),
+        loadPlayers(),
+        loadPendingPlayers(),
+        loadOpenModeStatus()
+    ]);
+}
+
+async function loadProxyStatusSummary() {
+    const hybridBanner = document.getElementById('hybridAuthBanner');
+    const sectionTitle = document.getElementById('accessSectionTitle');
+    const sectionDescription = document.getElementById('accessSectionDescription');
+    const addPlayerBtn = document.getElementById('addPlayerBtn');
+    const totalPlayersLabel = document.getElementById('totalPlayersLabel');
+    const quickGuideTitle = document.getElementById('quickGuideTitle');
+    const quickGuideText = document.getElementById('quickGuideText');
+    const openModeTitle = document.getElementById('openModeTitle');
+    const openModeDescription = document.getElementById('openModeDescription');
+
+    try {
+        const response = await fetch(`${API_BASE}/proxy/status`, {
+            headers: getAuthHeaders()
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to load proxy status');
+        }
+
+        hybridAuthMode = Boolean(data.hybrid_auth_mode);
+
+        if (hybridAuthMode) {
+            hybridBanner?.classList.remove('hidden');
+            if (sectionTitle) sectionTitle.textContent = 'Player Access Management';
+            if (sectionDescription) sectionDescription.innerHTML = 'Hybrid auth is live for the <span class="text-primary font-semibold">Survival Hub</span>: premium Java joins directly, cracked Java authenticates in PicoLimbo, and Bedrock keeps using Floodgate.';
+            if (addPlayerBtn) addPlayerBtn.classList.add('hidden');
+            if (totalPlayersLabel) totalPlayersLabel.textContent = 'Tracked Players';
+            if (quickGuideTitle) quickGuideTitle.textContent = 'Hybrid Auth Guide';
+            if (quickGuideText) quickGuideText.innerHTML = 'Premium Java players do not need a password. Cracked Java players should use <code class="bg-primary/10 px-1.5 py-0.5 rounded text-primary font-mono">/register &lt;password&gt; &lt;confirm&gt;</code> on first join and <code class="bg-primary/10 px-1.5 py-0.5 rounded text-primary font-mono">/login &lt;password&gt;</code> after that.';
+            if (openModeTitle) openModeTitle.textContent = 'Open Mode (Legacy)';
+            if (openModeDescription) openModeDescription.textContent = 'Hybrid auth now controls normal logins. Open Mode only remains for legacy whitelist/admin compatibility and does not replace premium/cracked auth.';
+            return;
+        }
+
+        hybridBanner?.classList.add('hidden');
+        if (sectionTitle) sectionTitle.textContent = 'Whitelist Management';
+        if (sectionDescription) sectionDescription.innerHTML = 'Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Survival Hub</span> server.';
+        if (addPlayerBtn) addPlayerBtn.classList.remove('hidden');
+        if (totalPlayersLabel) totalPlayersLabel.textContent = 'Total Whitelisted';
+        if (quickGuideTitle) quickGuideTitle.textContent = 'Quick Whitelist Guide';
+        if (quickGuideText) quickGuideText.innerHTML = 'You can also whitelist players directly from the in-game console using <code class="bg-primary/10 px-1.5 py-0.5 rounded text-primary font-mono">/whitelist add [username]</code>. This dashboard syncs instantly with your server instance.';
+        if (openModeTitle) openModeTitle.textContent = 'Open Mode Session';
+        if (openModeDescription) openModeDescription.textContent = 'When enabled, first-time visitors are auto-whitelisted at the proxy and sent straight to the Main server instead of PicoLimbo.';
+    } catch (error) {
+        hybridAuthMode = false;
+        hybridBanner?.classList.add('hidden');
+        if (addPlayerBtn) addPlayerBtn.classList.remove('hidden');
+    }
+}
+
+// Search functionality
+const searchInput = document.querySelector('input[placeholder="Search by username or UUID..."]');
+if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentSearch = e.target.value;
+            currentPage = 1;
+            loadPlayers();
+        }, 300);
+    });
+}
+
+// Whitelist button
+const whitelistBtn = document.querySelector('button');
+for (const btn of document.querySelectorAll('button')) {
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (icon && icon.textContent === 'person_add') {
+        btn.addEventListener('click', async () => {
+            if (!(await ensureAuth())) return;
+
+            const name = prompt('Enter player username to whitelist:');
+            if (name && name.trim()) {
+                addPlayer(name.trim());
+            }
+        });
+        break;
+    }
+}
+
+// Initialize
+checkAuth().then(auth => {
+    if (auth) {
+        loadDashboard();
+    } else {
+        showLoginModal();
+    }
+});
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    if (isAuthenticated) {
+        loadDashboard();
+    }
+}, 30000);
+
+// ============ Pending Players Functions ============
+
+async function loadPendingPlayers() {
+    try {
+        const response = await fetch(`${API_BASE}/pending`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) return;
+
+        const pending = await response.json();
+        const section = document.getElementById('pendingPlayersSection');
+        const list = document.getElementById('pendingPlayersList');
+
+        if (pending.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        list.innerHTML = pending.map(player => `
+            <div class="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800">
+                <div class="flex items-center gap-3">
+                    <div class="size-8 rounded bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                        <span class="text-purple-600 dark:text-purple-400 text-sm font-bold">${player.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-slate-900 dark:text-slate-100">${escapeHtml(player.name)}</span>
+                        <span class="ml-2 inline-flex items-center rounded-full ${player.platform === 'bedrock' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'} px-2 py-0.5 text-xs font-medium">
+                            ${player.platform === 'bedrock' ? '📱 Bedrock' : '☕ Java'}
+                        </span>
+                        <span class="ml-2 inline-flex items-center rounded-full ${player.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' : player.status === 'registering' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : player.status === 'registered' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'} px-2 py-0.5 text-xs font-medium">
+                            ${player.status}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="removePendingPlayer('${escapeHtml(player.name)}')" class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading pending players:', error);
+    }
+}
+
+async function loadOpenModeStatus() {
+    const badge = document.getElementById('openModeBadge');
+    const button = document.getElementById('openModeToggleBtn');
+    const meta = document.getElementById('openModeMeta');
+
+    if (!badge || !button || !meta) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/proxy/open-mode`, {
+            headers: getAuthHeaders()
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to load open mode');
+        }
+
+        openModeEnabled = Boolean(data.enabled);
+        const updatedAt = data.updated_at ? new Date(data.updated_at).toLocaleString() : 'never';
+        const updatedBy = data.updated_by || 'system';
+
+        if (hybridAuthMode) {
+            badge.className = 'inline-flex items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 px-3 py-1 text-xs font-bold uppercase tracking-wider';
+            badge.textContent = openModeEnabled ? 'Legacy On' : 'Legacy Off';
+            button.className = 'rounded-lg bg-slate-400 text-white px-4 py-2 text-sm font-bold cursor-not-allowed';
+            button.textContent = 'Legacy Only';
+            button.disabled = true;
+            meta.textContent = `Hybrid auth mode is active. Open Mode is no longer used for normal player admission. Current legacy state: ${openModeEnabled ? 'enabled' : 'disabled'} (last changed by ${updatedBy} at ${updatedAt}).`;
+            return;
+        }
+
+        badge.className = `inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+            openModeEnabled
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
+        }`;
+        badge.textContent = openModeEnabled ? 'Open Mode On' : 'Open Mode Off';
+
+        button.className = `rounded-lg px-4 py-2 text-sm font-bold transition-colors ${
+            openModeEnabled
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-amber-500 hover:bg-amber-600 text-white'
+        }`;
+        button.textContent = openModeEnabled ? 'Disable Open Mode' : 'Enable Open Mode';
+        button.disabled = false;
+
+        meta.textContent = openModeEnabled
+            ? `Enabled by ${updatedBy} at ${updatedAt}. New visitors are auto-whitelisted immediately.`
+            : `Disabled. Unwhitelisted players will continue to be sent to PicoLimbo. Last changed by ${updatedBy} at ${updatedAt}.`;
+    } catch (error) {
+        badge.className = 'inline-flex items-center justify-center rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 px-3 py-1 text-xs font-bold uppercase tracking-wider';
+        badge.textContent = 'Unavailable';
+        button.className = 'rounded-lg bg-slate-400 text-white px-4 py-2 text-sm font-bold cursor-not-allowed';
+        button.textContent = 'Unavailable';
+        meta.textContent = 'Could not reach the proxy open mode API.';
+    }
+}
+
+async function toggleOpenMode() {
+    if (!(await ensureAuth())) return;
+    if (hybridAuthMode) {
+        showNotification('Open Mode is legacy-only while hybrid auth is active.', 'error');
+        return;
+    }
+
+    const nextEnabled = !openModeEnabled;
+    const action = nextEnabled ? 'enable' : 'disable';
+    const confirmation = nextEnabled
+        ? 'Enable open mode? New visitors will be auto-whitelisted and sent straight to Main while this session is active.'
+        : 'Disable open mode? New visitors will go back to PicoLimbo unless they are already whitelisted.';
+
+    if (!confirm(confirmation)) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/proxy/open-mode`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ enabled: nextEnabled })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || `Failed to ${action} open mode`);
+        }
+
+        showNotification(`Open mode ${nextEnabled ? 'enabled' : 'disabled'}!`);
+        await loadOpenModeStatus();
+        await loadPlayers();
+    } catch (error) {
+        showNotification(error.message || 'Connection error', 'error');
+    }
+}
+
+function showAddPendingModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.id = 'addPendingModal';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">Add Pending Player</h2>
+            <form id="addPendingForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Username</label>
+                    <input type="text" id="pendingPlayerName" class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none text-slate-900 dark:text-slate-100" placeholder="Enter username" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Platform</label>
+                    <select id="pendingPlayerPlatform" class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none text-slate-900 dark:text-slate-100">
+                        <option value="bedrock">Bedrock (📱)</option>
+                        <option value="java">Java (☕)</option>
+                    </select>
+                </div>
+                <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 text-sm text-purple-700 dark:text-purple-300">
+                    <span class="material-symbols-outlined text-sm align-middle mr-1">info</span>
+                    For Bedrock players: use the proxy approval flow or Open Mode instead of the legacy registration path.
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeAddPendingModal()" class="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition-colors">
+                        Add Player
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('#addPendingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('pendingPlayerName').value.trim();
+        const platform = document.getElementById('pendingPlayerPlatform').value;
+
+        try {
+            const response = await fetch(`${API_BASE}/pending`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ name, platform })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showNotification(`Added ${name} to pending list`);
+                closeAddPendingModal();
+                loadPendingPlayers();
+            } else {
+                showNotification(data.error || 'Failed to add player', 'error');
+            }
+        } catch (error) {
+            showNotification('Connection error', 'error');
+        }
+    });
+}
+
+function closeAddPendingModal() {
+    const modal = document.getElementById('addPendingModal');
+    if (modal) modal.remove();
+}
+
+async function removePendingPlayer(name) {
+    if (!confirm(`Remove ${name} from pending list?`)) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/pending/${encodeURIComponent(name)}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+            showNotification(`Removed ${name} from pending list`);
+            loadPendingPlayers();
+        } else {
+            const data = await response.json();
+            showNotification(data.error || 'Failed to remove', 'error');
+        }
+    } catch (error) {
+        showNotification('Connection error', 'error');
+    }
+}
+
+async function startBedrockRegistration(name) {
+    showNotification('Legacy Bedrock registration is disabled. Use proxy approvals or Open Mode instead.', 'error');
+}
+
+// Registration status polling
+let registrationPollInterval = null;
+
+function startRegistrationPolling() {
+    if (registrationPollInterval) return;
+
+    registrationPollInterval = setInterval(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/bedrock/status`, {
+                headers: getAuthHeaders()
+            });
+
+            if (response.ok) {
+                const status = await response.json();
+                if (status.active) {
+                    console.log('Registration in progress:', status);
+                    // Could show a progress indicator here
+                }
+            }
+        } catch (error) {
+            // Silently fail
+        }
+    }, 2000);
+}
+
+</script>

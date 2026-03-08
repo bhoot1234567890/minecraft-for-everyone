@@ -1,0 +1,22 @@
+name: OptionalAuthGuard
+main: com.minecraft.auth.OptionalAuthGuardPlugin
+version: 1.0.0
+api-version: "1.21"
+description: Optional password protection for cracked Java players behind FastLogin.
+author: Minecraft Admin
+commands:
+  register:
+    description: Protect your cracked Java account with a password.
+    usage: /register <password> <confirm>
+    permission: optionalauthguard.use
+  login:
+    description: Log into your protected cracked Java account.
+    usage: /login <password>
+    permission: optionalauthguard.use
+  changepassword:
+    description: Change the password for your protected cracked Java account.
+    usage: /changepassword <oldPassword> <newPassword>
+    permission: optionalauthguard.use
+permissions:
+  optionalauthguard.use:
+    default: true

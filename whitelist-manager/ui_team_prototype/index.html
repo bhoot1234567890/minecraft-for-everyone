@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Minecraft Admin | Whitelist &amp; User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d411",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">view_in_ar</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">CreeperPanel</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#">Whitelist</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Server Logs</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4">
+<div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="text-xs font-bold text-primary uppercase tracking-wider">Server Online</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 border-l border-primary/20 pl-2">24 / 100 Players</span>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded h-10 w-10 bg-primary/10 hover:bg-primary/20 text-slate-700 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded h-10 w-10 bg-primary/10 hover:bg-primary/20 text-slate-700 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/30" data-alt="User profile avatar of Steve skin" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCAP09zBr9eeox7vBJbfurX-C0e5aaiO7dF-C8-77mpiRdXAOlDoXdERs-YxLL1CD0s7Z72oNCELhOrvVjotBjQ9qu0AB8QCnr8emeOX19tRdrXk5olT1CCPA68Dxn9dmF4BuazHpv2TJpE8JXa00bLN23kThP-8GddqKJ-0aexM1eAvrPjswl3IgeJEhhdCdw8E7Kl5s5Qgi_qV1KTj4x7yHZBFlkTP-euJftBA1BuMFlO5w-Dyq3OQX34h6ku5J1qDFcNGReGy1s");'></div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 px-6 md:px-10 gap-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black leading-tight tracking-tight">Whitelist Management</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal">Manage player access, bans, and ranks for the <span class="text-primary font-semibold">Survival Hub</span> server.</p>
+</div>
+<button class="flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-background-dark px-6 py-3 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">person_add</span>
+<span>Whitelist New Player</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Total Whitelisted</p>
+<div class="flex items-baseline gap-2">
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold">1,428</p>
+<p class="text-primary text-sm font-medium">+12 this week</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Active Bans</p>
+<div class="flex items-baseline gap-2">
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold">42</p>
+<p class="text-red-500 text-sm font-medium">-2 this week</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Queue Capacity</p>
+<div class="flex items-baseline gap-2">
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold">88%</p>
+<div class="flex-1 h-2 bg-primary/20 rounded-full overflow-hidden ml-4">
+<div class="bg-primary h-full w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-primary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 text-base border-none rounded-xl bg-white dark:bg-primary/5 ring-1 ring-primary/10 focus:ring-2 focus:ring-primary focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-slate-100 shadow-sm transition-all" placeholder="Search by username or UUID..." type="text"/>
+</div>
+<div class="overflow-hidden rounded-xl bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 dark:bg-primary/10 text-slate-600 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+<th class="px-6 py-4">Player</th>
+<th class="px-6 py-4">UUID</th>
+<th class="px-6 py-4">Last Seen</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/10">
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="size-10 rounded-md bg-background-light dark:bg-background-dark" data-alt="Minecraft skin helm of Dream" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHxHQfP1qnBXnMgMew1eCrup1mh8pF9NYbhnV8ZZH9YrD74dT_rl7XinSz4oD_jnGeyc9IHtHHAQuVvam9SCJ_oSsgoV5Yy-bV8ub9Q1UwOdxVCcHrOxPS1Dc49KZ-lerZzXSNIhInpZmrfhlYdIvytt5rDlTt1yhHcLaMJ1y3_ZUQViWOTYkr_FZBbFu7thvJiRjnReHvU5LQk_x5tozOqP-9kK_7A0W-HSa_fLKBlVJpPYXc8CRem7SqLoT45jG1_Ip_0H0cSOE"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">Dream</span>
+<span class="text-xs text-primary font-medium">Administrator</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">ec7062f7-7d4a-4504...</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">2 minutes ago</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-bold text-primary">Online</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/20 rounded-lg text-primary transition-colors" title="Promote"><span class="material-symbols-outlined text-[20px]">upgrade</span></button>
+<button class="p-2 hover:bg-red-500/20 rounded-lg text-red-500 transition-colors" title="Ban"><span class="material-symbols-outlined text-[20px]">block</span></button>
+<button class="p-2 hover:bg-slate-500/20 rounded-lg text-slate-500 transition-colors" title="Remove"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="size-10 rounded-md bg-background-light dark:bg-background-dark" data-alt="Minecraft skin helm of Technoblade" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwybZ7QqhkOFQ3QMjSUIk4JX-95IUCGMAGToKTRrAbio6UORUfiQpvS_DZpxVrWqjIHUSeBZ7MWN60Ojt8uv2xVxgCnOFzNvBWxOj8gvWtOTg9Ho2aOmkYlMfvyYXyEmVcf1q9yho1l6lgfPLu6WQQxqnTFzTGiWUW8w2VrPfHns18MpFZK59CbPIAX2ioalk8HKS4aVYcSni4Xm54QNjuIvWrhu1474bL3F2W_hLKeMytj6R-XX8YRpopRwN3fOwofrN_3eBwOoI"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">Technoblade</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Member</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">853c80ef-3c37-49fd...</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">3 hours ago</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center rounded-full bg-slate-200 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-bold text-slate-500">Offline</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/20 rounded-lg text-primary transition-colors" title="Promote"><span class="material-symbols-outlined text-[20px]">upgrade</span></button>
+<button class="p-2 hover:bg-red-500/20 rounded-lg text-red-500 transition-colors" title="Ban"><span class="material-symbols-outlined text-[20px]">block</span></button>
+<button class="p-2 hover:bg-slate-500/20 rounded-lg text-slate-500 transition-colors" title="Remove"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="size-10 rounded-md bg-background-light dark:bg-background-dark" data-alt="Minecraft skin helm of GeorgeNotFound" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAma426fS_GeYKFEsn-rm0QRL9AV2z9M8Mf9BAgistNKo2dRZx7P07PIeYrd8PRBXhDvZbZgpnuZfnKBOPIAtgUkvbxIDVdA_aT8ZnrRbzCsSUQmMvEYNEL10TsJbY12p6-131yBny9GDGfavZhEx34oSZwyQ3Ej33Jg9ak-MTdP8Qx5W5MzEymVycbovLVB4HW84IuewNJW08pEAlQigv8p43ElaAfThlxl7nNOb41wlKxlHKOLvxV8GBTQsQ13BnUZ6DRzKXvW7k"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">GeorgeNotFound</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Member</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">06079772-baab-4cfa...</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">12 days ago</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center rounded-full bg-slate-200 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-bold text-slate-500">Offline</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/20 rounded-lg text-primary transition-colors" title="Promote"><span class="material-symbols-outlined text-[20px]">upgrade</span></button>
+<button class="p-2 hover:bg-red-500/20 rounded-lg text-red-500 transition-colors" title="Ban"><span class="material-symbols-outlined text-[20px]">block</span></button>
+<button class="p-2 hover:bg-slate-500/20 rounded-lg text-slate-500 transition-colors" title="Remove"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="size-10 rounded-md bg-background-light dark:bg-background-dark" data-alt="Minecraft skin helm of Sapnap" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfFts7IEsBW-OaMFd8tp9Exlef0Z-Rl2NtcI1YBtvqpfdrHLgmxNXjO1r0dePZvCOgjxQUF4LElLf-xb0_7LjiI23HLc-SB08HH98f8dBlMS30Kc5MtzLiwgcXwOS5JpC_O74h8_h-P5661-RXKWlOqVm_88GiqzyzNfUefRJyPM729dM5yGSOR-rmMll7ZthCT41BVaKPlW_7FTWx6Kzh8TUh20ZheNT3tw4ePuvBMyYjocdGRlSSLRWoaD3bjX1XMatt6GylyHI"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">Sapnap</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Member</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">c3fbd69b-8911-477d...</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Just now</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-bold text-primary">Online</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-primary/20 rounded-lg text-primary transition-colors" title="Promote"><span class="material-symbols-outlined text-[20px]">upgrade</span></button>
+<button class="p-2 hover:bg-red-500/20 rounded-lg text-red-500 transition-colors" title="Ban"><span class="material-symbols-outlined text-[20px]">block</span></button>
+<button class="p-2 hover:bg-slate-500/20 rounded-lg text-slate-500 transition-colors" title="Remove"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-primary/5 dark:bg-primary/10 flex items-center justify-between">
+<p class="text-xs text-slate-500 dark:text-slate-400">Showing 1 to 4 of 1,428 players</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-background-dark border border-primary/20 text-slate-500 disabled:opacity-50">Previous</button>
+<button class="px-3 py-1 text-xs font-bold rounded bg-primary text-background-dark">1</button>
+<button class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-background-dark border border-primary/20 text-slate-700 dark:text-slate-300">2</button>
+<button class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-background-dark border border-primary/20 text-slate-700 dark:text-slate-300">Next</button>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-xl border border-primary/10 bg-primary/5 p-6 flex flex-col md:flex-row items-center gap-6">
+<div class="size-16 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">info</span>
+</div>
+<div class="flex flex-col gap-1 flex-1 text-center md:text-left">
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Quick Whitelist Guide</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">You can also whitelist players directly from the in-game console using <code class="bg-primary/10 px-1.5 py-0.5 rounded text-primary font-mono">/whitelist add [username]</code>. This dashboard syncs instantly with your server instance.</p>
+</div>
+<button class="whitespace-nowrap rounded bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 text-sm font-bold transition-colors">
+                            View Documentation
+                        </button>
+</div>
+</div>
+</main>
+<footer class="border-t border-primary/10 py-6 px-10 text-center">
+<p class="text-xs text-slate-500 dark:text-slate-400">© 2024 CreeperPanel Admin Dashboard • Connected to <span class="text-primary">survival-main-01.mc-hosting.net</span></p>
+</footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,216 @@
+services:
+  # Build the WhitelistRouter plugin first
+  whitelist-router-builder:
+    build: ./velocity-whitelist-router
+    container_name: whitelist-router-builder
+    volumes:
+      - ./plugins-output:/output
+
+  optional-auth-guard-builder:
+    build: ./optional-auth-guard
+    container_name: optional-auth-guard-builder
+    user: "1000:1000"
+    volumes:
+      - ./main-data/plugins:/output
+
+  fastlogin-db:
+    image: mariadb:11.4
+    container_name: fastlogin-db
+    environment:
+      MARIADB_DATABASE: fastlogin
+      MARIADB_USER: fastlogin
+      MARIADB_PASSWORD: ${FASTLOGIN_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${FASTLOGIN_DB_PASSWORD}
+    volumes:
+      - ./data/fastlogin-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -p$${MARIADB_ROOT_PASSWORD} --silent"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    mem_limit: 512m
+    cpus: 0.5
+    restart: unless-stopped
+
+  # Velocity Proxy with Geyser + Floodgate
+  velocity:
+    image: itzg/mc-proxy:java21
+    container_name: velocity-proxy
+    environment:
+      TYPE: VELOCITY
+      VELOCITY_VERSION: "3.5.0-SNAPSHOT"
+      MEMORY: 768m
+      API_PORT: "8080"
+      HYBRID_AUTH_MODE: "false"
+      PROXY_API_TOKEN: ${PROXY_API_TOKEN}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    ports:
+      - "25565:25577"    # Java Edition
+      - "19132:19132/udp" # Bedrock Edition
+    volumes:
+      - ./proxy-data:/server
+      - ./plugins-output:/server/plugins
+      - ./shared-whitelist:/whitelist
+    depends_on:
+      - whitelist-router-builder
+      - fastlogin-db
+      - main
+      - limbo
+    mem_limit: 1g
+    cpus: 1.0
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+  # Main Paper Server (Real Game)
+  main:
+    image: itzg/minecraft-server:java21
+    container_name: minecraft-main
+    environment:
+      EULA: "TRUE"
+      TYPE: PAPER
+      VERSION: "1.21.11"
+      ONLINE_MODE: "false"  # Proxy handles auth
+      SERVER_NAME: "Main Survival"
+      MOTD: "Welcome to the Main Server!"
+      MAX_PLAYERS: 20
+      MODE: survival
+      DIFFICULTY: normal
+      MEMORY: "2G"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: ${RCON_PASSWORD}
+      BROADCAST_RCON_TO_OPS: "false"
+      # No whitelist here - proxy handles it
+      WHITELIST: ""
+      ENFORCE_WHITELIST: "false"
+    volumes:
+      - ./main-data:/data
+    depends_on:
+      - optional-auth-guard-builder
+    mem_limit: 3G
+    cpus: 2.0
+    restart: unless-stopped
+    stop_grace_period: 1m
+    stdin_open: true
+    tty: true
+
+  # PicoLimbo (Holding Server for Unwhitelisted Players)
+  limbo:
+    image: itzg/minecraft-server:java21
+    container_name: minecraft-limbo
+    environment:
+      TYPE: CUSTOM
+      VERSION: "1.21.11"
+      CUSTOM_SERVER: "https://github.com/Quozul/PicoLimbo/releases/download/v1.11.0%2Bmc1.21.11/pico_limbo_java_wrapper.jar"
+      MEMORY: "256m"
+      EULA: "TRUE"
+      ONLINE_MODE: "false"
+    volumes:
+      - ./limbo-data:/data
+    mem_limit: 512m
+    cpus: 0.5
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+  # Whitelist Manager (Dashboard)
+  whitelist-manager:
+    build: ./whitelist-manager
+    container_name: whitelist-manager
+    environment:
+      WHITELIST_PATH: /whitelist/whitelist.json
+      BANS_PATH: /whitelist/banned-players.json
+      PENDING_PATH: /whitelist/pending_bedrock.json
+      PORT: "3000"
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+      LOG_FILE_PATH: /logs/main/latest.log
+      PROXY_API_URL: "http://velocity:8080"
+      PROXY_API_TOKEN: ${PROXY_API_TOKEN}
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./shared-whitelist:/whitelist
+      - ./main-data/logs:/logs/main:ro
+    depends_on:
+      - velocity
+      - main
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:3000/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    stop_grace_period: 20s
+
+  # RCON-coordinated backups for the main world data
+  backup-main:
+    image: itzg/mc-backup:2025.8.1
+    container_name: backup-main
+    environment:
+      BACKUP_METHOD: tar
+      BACKUP_ON_STARTUP: "true"
+      INITIAL_DELAY: ${BACKUP_INITIAL_DELAY:-30s}
+      BACKUP_INTERVAL: ${BACKUP_INTERVAL:-6h}
+      PRUNE_BACKUPS_DAYS: ${PRUNE_BACKUPS_DAYS:-7}
+      RCON_HOST: main
+      RCON_PORT: "25575"
+      RCON_PASSWORD: ${RCON_PASSWORD}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./main-data:/data:ro
+      - ./backups/main:/backups
+    depends_on:
+      - main
+    mem_limit: 512m
+    cpus: 0.5
+    restart: unless-stopped
+
+  # Backups for proxy, limbo, whitelist, and plugin state
+  state-backup:
+    build: ./ops
+    container_name: state-backup
+    command: ["/ops/state-backup-loop.sh"]
+    environment:
+      STATE_INITIAL_DELAY: ${STATE_INITIAL_DELAY:-30s}
+      STATE_BACKUP_INTERVAL: ${STATE_BACKUP_INTERVAL:-6h}
+      STATE_PRUNE_DAYS: ${STATE_PRUNE_DAYS:-7}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./proxy-data:/sources/proxy-data:ro
+      - ./limbo-data:/sources/limbo-data:ro
+      - ./shared-whitelist:/sources/shared-whitelist:ro
+      - ./plugins-output:/sources/plugins-output:ro
+      - ./backups/state:/backups/state
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
+
+  # Lightweight local monitoring and alert snapshots
+  stack-monitor:
+    build: ./ops
+    container_name: stack-monitor
+    command: ["/ops/stack-monitor.sh"]
+    environment:
+      MONITOR_INTERVAL_SECONDS: ${MONITOR_INTERVAL_SECONDS:-60}
+      BACKUP_MAX_AGE_HOURS: ${BACKUP_MAX_AGE_HOURS:-30}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./backups:/backups:ro
+      - ./monitoring:/monitoring
+    depends_on:
+      - velocity
+      - main
+      - limbo
+      - whitelist-manager
+      - backup-main
+      - state-backup
+    mem_limit: 128m
+    cpus: 0.25
+    restart: unless-stopped

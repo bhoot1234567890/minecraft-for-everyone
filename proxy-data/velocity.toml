@@ -1,0 +1,65 @@
+# Velocity Proxy Configuration
+# Network settings
+bind = "0.0.0.0:25577"
+# What should be the MOTD? This gets displayed when the player adds your server to
+# their server list. Only MiniMessage format is accepted.
+motd = "<green>Minecraft Server Proxy</green>"
+# Player limit (-1 = unlimited)
+show-max-players = 100
+# Hybrid auth mode:
+# - premium Java players are auto-authenticated by VeloAuth
+# - cracked Java players register/login through PicoLimbo
+# - Bedrock players still enter via Floodgate
+online-mode = false
+# Player info forwarding - MODERN for Floodgate
+player-info-forwarding-mode = "MODERN"
+#If you are using modern or BungeeGuard IP forwarding, configure a file that contains a unique secret here.
+#The file is expected to be UTF-8 encoded and not empty.
+forwarding-secret-file = "forwarding.secret"
+# Compression
+compression-threshold = 256
+compression-level = 6
+# Connection timeout
+connection-timeout = 5000
+read-timeout = 30000
+# Query settings
+query-enabled = false
+query-port = 25577
+# Rate limiting
+login-ratelimit = 3000
+# Announce Forge/FML
+announce-forge = false
+# Forced hosts (for virtual hosting)
+forced-hosts = {}
+config-version = "2.7"
+#Should the proxy enforce the new public key security standard? By default, this is on.
+force-key-authentication = false
+
+# Servers
+[servers]
+	# Main survival server
+	main = "main:25565"
+	# Limbo server for unwhitelisted players
+	limbo = "limbo:25565"
+	# Try order - default server
+	try = ["main"]
+
+[advanced]
+	# TCP fast open
+	tcp-fast-open = false
+	# BungeeCord plugin messaging
+	bungee-plugin-message-channel = true
+	# Show ping requests
+	show-ping-requests = false
+	# Failover on unexpected server disconnect
+	failover-on-unexpected-server-disconnect = true
+	# Announce proxy commands
+	announce-proxy-commands = true
+	#Allows players transferred from other hosts via the
+	#Transfer packet (Minecraft 1.20.5) to be received.
+	accepts-transfers = false
+
+[query]
+	enabled = false
+	port = 25577
+	show-plugins = false

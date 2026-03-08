@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>How to Play | Minecraft Server</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d411",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <div class="relative flex min-h-screen w-full flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3 sticky top-0 z-50">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="size-10 bg-primary rounded flex items-center justify-center text-background-dark">
+                        <span class="material-symbols-outlined font-bold">view_in_ar</span>
+                    </div>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">02031998.xyz</h2>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#quick-start">Quick Start</a>
+                    <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#java">Java Edition</a>
+                    <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#bedrock">Bedrock</a>
+                    <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#troubleshooting">Troubleshooting</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="flex items-center justify-center rounded-lg h-10 w-10 bg-primary/10 hover:bg-primary/20 text-slate-700 dark:text-slate-300 transition-colors">
+                    <span class="material-symbols-outlined dark:hidden">dark_mode</span>
+                    <span class="material-symbols-outlined hidden dark:block">light_mode</span>
+                </button>
+                <a href="/" class="flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-background-dark px-4 py-2 text-sm font-bold transition-all">
+                    <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                    <span class="hidden sm:inline">Admin Panel</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden py-16 md:py-24 px-6 md:px-10">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5"></div>
+            <div class="relative max-w-4xl mx-auto text-center">
+                <!-- Status Badges -->
+                <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        <span class="text-xs font-bold text-primary uppercase tracking-wider">Server Online</span>
+                    </div>
+                    <!-- Open Mode Status Badge -->
+                    <div id="openModeBadge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-sm">sync</span>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Checking...</span>
+                    </div>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-black text-slate-900 dark:text-slate-100 mb-4">
+                    How to Play
+                </h1>
+                <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+                    Join our Minecraft server from any device. We support <span class="text-primary font-semibold">Java Edition</span> (PC/Mac/Linux) and <span class="text-primary font-semibold">Bedrock Edition</span> (Mobile/Console/Windows).
+                </p>
+            </div>
+        </section>
+
+        <!-- Open Mode BIG Banner -->
+        <div id="openModeBanner" class="hidden">
+            <div class="bg-gradient-to-r from-green-500 via-emerald-500 to-green-500 px-6 md:px-10 py-8 relative overflow-hidden">
+                <!-- Animated background -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+                <div class="relative max-w-4xl mx-auto text-center">
+                    <div class="flex items-center justify-center gap-4 mb-4">
+                        <span class="material-symbols-outlined text-white text-4xl md:text-5xl animate-bounce">lock_open</span>
+                        <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight">
+                            OPEN MODE IS ACTIVE!
+                        </h2>
+                        <span class="material-symbols-outlined text-white text-4xl md:text-5xl animate-bounce">lock_open</span>
+                    </div>
+                    <p class="text-lg md:text-2xl text-white/90 font-medium mb-2">
+                        Join now and get <span class="font-bold text-yellow-300">INSTANT ACCESS</span> - no whitelist needed!
+                    </p>
+                    <p class="text-sm md:text-base text-white/70">
+                        New players are automatically added to the whitelist when they connect.
+                    </p>
+                    <div class="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur border border-white/30">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-400"></span>
+                        </span>
+                        <span class="text-white font-bold uppercase tracking-wider">Connect Now: 02031998.xyz</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start Cards -->
+        <section id="quick-start" class="px-6 md:px-10 pb-16">
+            <div class="max-w-5xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Java Card -->
+                    <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6 hover:border-primary/40 transition-colors">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-2xl">computer</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Java Edition</h3>
+                                <p class="text-sm text-slate-500">PC / Mac / Linux</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                                <span class="text-sm text-slate-600 dark:text-slate-400">Server Address</span>
+                                <code class="text-sm font-mono font-bold text-primary">02031998.xyz</code>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                                <span class="text-sm text-slate-600 dark:text-slate-400">Port</span>
+                                <code class="text-sm font-mono text-slate-700 dark:text-slate-300">25565 (default)</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bedrock Card -->
+                    <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6 hover:border-primary/40 transition-colors">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-2xl">smartphone</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Bedrock Edition</h3>
+                                <p class="text-sm text-slate-500">Mobile / Console / Windows 10+</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                                <span class="text-sm text-slate-600 dark:text-slate-400">Server Address</span>
+                                <code class="text-sm font-mono font-bold text-primary">02031998.xyz</code>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                                <span class="text-sm text-slate-600 dark:text-slate-400">Port</span>
+                                <code class="text-sm font-mono text-slate-700 dark:text-slate-300">19132</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 1: Get Minecraft -->
+        <section id="java" class="px-6 md:px-10 py-16 bg-slate-50 dark:bg-slate-900/30">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="size-10 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold text-lg">1</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">Get Minecraft</h2>
+                </div>
+
+                <!-- Java Edition -->
+                <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6 md:p-8 mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">computer</span>
+                        Java Edition (PC/Mac/Linux)
+                    </h3>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Official -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-slate-700 dark:text-slate-300">Official (Paid)</h4>
+                            <a href="https://www.minecraft.net/en-us/store/minecraft-java-bedrock-edition-pc" target="_blank" class="block p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary">shopping_cart</span>
+                                    <div>
+                                        <p class="font-medium text-slate-900 dark:text-slate-100">Minecraft.net</p>
+                                        <p class="text-sm text-slate-500">Official website</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- TLauncher -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-slate-700 dark:text-slate-300">Free Alternative</h4>
+                            <a href="https://dl1.tlauncher.org/f.php?f=files%2FTLauncher.v17.zip" target="_blank" class="block p-4 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 hover:border-amber-400 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-amber-500">download</span>
+                                    <div>
+                                        <p class="font-medium text-slate-900 dark:text-slate-100">TLauncher v17</p>
+                                        <p class="text-sm text-slate-500">Free launcher</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- TLauncher Instructions -->
+                    <div class="mt-6 p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                        <h4 class="font-semibold text-slate-700 dark:text-slate-300 mb-3">Install TLauncher:</h4>
+                        <ol class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                            <li class="flex gap-2"><span class="text-primary font-bold">1.</span> Download the ZIP file from the link above</li>
+                            <li class="flex gap-2"><span class="text-primary font-bold">2.</span> Extract the ZIP file to a folder</li>
+                            <li class="flex gap-2"><span class="text-primary font-bold">3.</span> Run <code class="px-1 py-0.5 bg-slate-200 dark:bg-slate-700 rounded">TLauncher.exe</code></li>
+                            <li class="flex gap-2"><span class="text-primary font-bold">4.</span> Create an account or play offline</li>
+                            <li class="flex gap-2"><span class="text-primary font-bold">5.</span> Select version 1.21.x and click <strong>Install</strong></li>
+                        </ol>
+                    </div>
+
+                    <!-- Java Install -->
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-slate-700 dark:text-slate-300 mb-3">Install Java (if needed):</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                    <tr>
+                                        <td class="py-2 pr-4 text-slate-600 dark:text-slate-400">Windows</td>
+                                        <td class="py-2"><code class="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded">winget install -e --id Microsoft.OpenJDK.21</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 pr-4 text-slate-600 dark:text-slate-400">macOS</td>
+                                        <td class="py-2"><code class="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded">brew install openjdk@21</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 pr-4 text-slate-600 dark:text-slate-400">Linux</td>
+                                        <td class="py-2"><code class="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded">sudo apt install openjdk-21-jdk</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bedrock Edition -->
+                <div id="bedrock" class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">smartphone</span>
+                        Bedrock Edition (Mobile/Console/Windows 10+)
+                    </h3>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <a href="https://apps.apple.com/in/app/minecraft/id479516143" target="_blank" class="p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary transition-colors text-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">phone_iphone</span>
+                            <p class="font-medium text-sm">iOS</p>
+                            <p class="text-xs text-slate-500">App Store</p>
+                        </a>
+                        <a href="https://play.google.com/store/apps/details?id=com.mojang.minecraftpe" target="_blank" class="p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary transition-colors text-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">android</span>
+                            <p class="font-medium text-sm">Android</p>
+                            <p class="text-xs text-slate-500">Google Play</p>
+                        </a>
+                        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">desktop_windows</span>
+                            <p class="font-medium text-sm">Windows</p>
+                            <p class="text-xs text-slate-500">MS Store</p>
+                        </div>
+                        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">sports_esports</span>
+                            <p class="font-medium text-sm">Xbox</p>
+                            <p class="text-xs text-slate-500">Xbox Store</p>
+                        </div>
+                        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">stadia_controller</span>
+                            <p class="font-medium text-sm">PlayStation</p>
+                            <p class="text-xs text-slate-500">PS Store</p>
+                        </div>
+                        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">videogame_asset</span>
+                            <p class="font-medium text-sm">Switch</p>
+                            <p class="text-xs text-slate-500">eShop</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2 & 3: Add Server -->
+        <section class="px-6 md:px-10 py-16">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="size-10 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold text-lg">2</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">Add the Server</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Java Steps -->
+                    <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">computer</span>
+                            Java Edition
+                        </h3>
+                        <ol class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
+                                <span>Click <strong>Multiplayer</strong> from main menu</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">2</span>
+                                <span>Click <strong>Add Server</strong></span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">3</span>
+                                <span>Server Name: <code class="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">Our Server</code></span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">4</span>
+                                <span>Server Address: <code class="px-1 py-0.5 bg-primary/10 text-primary rounded font-bold">02031998.xyz</code></span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">5</span>
+                                <span>Click <strong>Done</strong>, then <strong>Join Server</strong></span>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <!-- Bedrock Steps -->
+                    <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">smartphone</span>
+                            Bedrock Edition
+                        </h3>
+                        <ol class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
+                                <span>Click <strong>Play</strong> → <strong>Servers</strong> tab</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">2</span>
+                                <span>Scroll down, click <strong>Add Server</strong></span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">3</span>
+                                <span>Server Name: <code class="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">Our Server</code></span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">4</span>
+                                <span>Address: <code class="px-1 py-0.5 bg-primary/10 text-primary rounded font-bold">02031998.xyz</code></span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="flex-shrink-0 size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">5</span>
+                                <span>Port: <code class="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">19132</code>, then <strong>Save</strong></span>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Whitelist -->
+        <section class="px-6 md:px-10 py-16 bg-slate-50 dark:bg-slate-900/30">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="size-10 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold text-lg">3</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">Get Whitelisted</h2>
+                </div>
+
+                <div class="rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-6 mb-6">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-amber-500 text-2xl">info</span>
+                        <div>
+                            <h4 class="font-semibold text-amber-800 dark:text-amber-200 mb-2">First-time connection?</h4>
+                            <p class="text-sm text-amber-700 dark:text-amber-300">You'll be placed in a <strong>waiting area (Limbo)</strong> until an admin adds you to the whitelist.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Mode -->
+                <div class="rounded-xl border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 p-6 mb-6">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-green-500 text-2xl">bolt</span>
+                        <div>
+                            <h4 class="font-semibold text-green-800 dark:text-green-200 mb-2">Open Mode Sessions</h4>
+                            <p class="text-sm text-green-700 dark:text-green-300 mb-2">Sometimes we enable <strong>Open Mode</strong>, which automatically adds new players to the whitelist!</p>
+                            <ul class="text-sm text-green-700 dark:text-green-300 space-y-1">
+                                <li>• New players are auto-whitelisted on first join</li>
+                                <li>• You'll be sent directly to the main world</li>
+                                <li>• Ask an admin if Open Mode is currently active</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6">
+                        <h4 class="font-semibold text-slate-900 dark:text-slate-100 mb-3">Java Players</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Contact an admin with your <strong>exact Minecraft username</strong>.</p>
+                    </div>
+                    <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6">
+                        <h4 class="font-semibold text-slate-900 dark:text-slate-100 mb-3">Bedrock Players</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Your name will appear with a dot prefix, e.g., <code class="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">.YourName</code></p>
+                    </div>
+                </div>
+
+                <!-- Connection Flow -->
+                <div class="rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 p-6">
+                    <h4 class="font-semibold text-slate-900 dark:text-slate-100 mb-4">How Connection Works</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+                        <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                            <span class="material-symbols-outlined text-primary text-2xl">login</span>
+                            <p class="text-sm font-medium mt-1">You Connect</p>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-400">arrow_forward</span>
+                        <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                            <span class="material-symbols-outlined text-primary text-2xl">dns</span>
+                            <p class="text-sm font-medium mt-1">Proxy Check</p>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-400">arrow_forward</span>
+                        <div class="p-4 rounded-lg bg-primary/10 border border-primary">
+                            <span class="material-symbols-outlined text-primary text-2xl">check_circle</span>
+                            <p class="text-sm font-medium mt-1 text-primary">Whitelisted?</p>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-400">arrow_forward</span>
+                        <div class="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700">
+                            <span class="material-symbols-outlined text-green-500 text-2xl">terrain</span>
+                            <p class="text-sm font-medium mt-1 text-green-600 dark:text-green-400">Main World</p>
+                        </div>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-4">Not whitelisted? You'll go to Limbo (waiting area)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting" class="px-6 md:px-10 py-16">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-8 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">build</span>
+                    Troubleshooting
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- Issue 1 -->
+                    <details class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 group">
+                        <summary class="p-4 cursor-pointer flex items-center justify-between font-medium text-slate-900 dark:text-slate-100">
+                            <span>"Failed to connect to server"</span>
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                        </summary>
+                        <div class="px-4 pb-4 text-sm text-slate-600 dark:text-slate-400">
+                            <ul class="space-y-2">
+                                <li>• Double-check the server address</li>
+                                <li>• Server might be offline - contact admin</li>
+                                <li>• Try disabling your VPN</li>
+                                <li>• Check firewall settings</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Issue 2 -->
+                    <details class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 group">
+                        <summary class="p-4 cursor-pointer flex items-center justify-between font-medium text-slate-900 dark:text-slate-100">
+                            <span>"Disconnected" immediately after joining</span>
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                        </summary>
+                        <div class="px-4 pb-4 text-sm text-slate-600 dark:text-slate-400">
+                            <p class="mb-2">This usually means you're not whitelisted:</p>
+                            <ol class="space-y-1 list-decimal list-inside">
+                                <li>Note your exact username shown in-game</li>
+                                <li>Contact an admin to be added</li>
+                                <li>Try connecting again after being added</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Issue 3 -->
+                    <details class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 group">
+                        <summary class="p-4 cursor-pointer flex items-center justify-between font-medium text-slate-900 dark:text-slate-100">
+                            <span>"Invalid session" or "Not authenticated"</span>
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                        </summary>
+                        <div class="px-4 pb-4 text-sm text-slate-600 dark:text-slate-400">
+                            <p><strong>Java:</strong> Log out and back into the Minecraft Launcher</p>
+                            <p><strong>Bedrock:</strong> Sign out and back into your Microsoft account</p>
+                        </div>
+                    </details>
+
+                    <!-- Issue 4 -->
+                    <details class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 group">
+                        <summary class="p-4 cursor-pointer flex items-center justify-between font-medium text-slate-900 dark:text-slate-100">
+                            <span>Bedrock: "Unable to connect to world"</span>
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                        </summary>
+                        <div class="px-4 pb-4 text-sm text-slate-600 dark:text-slate-400">
+                            <ul class="space-y-2">
+                                <li>• Make sure port is <strong>19132</strong></li>
+                                <li>• Check your internet connection</li>
+                                <li>• Verify Microsoft account is signed in</li>
+                                <li>• Try cellular data vs WiFi</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Issue 5 -->
+                    <details class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 group">
+                        <summary class="p-4 cursor-pointer flex items-center justify-between font-medium text-slate-900 dark:text-slate-100">
+                            <span>Java: "Outdated client" or "Outdated server"</span>
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                        </summary>
+                        <div class="px-4 pb-4 text-sm text-slate-600 dark:text-slate-400">
+                            <ol class="space-y-1 list-decimal list-inside">
+                                <li>Open the Minecraft Launcher</li>
+                                <li>Make sure you're using the latest version</li>
+                                <li>If server is older, create a profile for that version</li>
+                            </ol>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Server Rules -->
+        <section class="px-6 md:px-10 py-16 bg-slate-50 dark:bg-slate-900/30">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-8 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">gavel</span>
+                    Server Rules
+                </h2>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary">handshake</span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Be respectful to all players</span>
+                    </div>
+                    <div class="p-4 rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary">block</span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">No griefing others' builds</span>
+                    </div>
+                    <div class="p-4 rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary">shield</span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">No cheating or hacks</span>
+                    </div>
+                    <div class="p-4 rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary">chat</span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">No spam in chat</span>
+                    </div>
+                    <div class="p-4 rounded-xl border border-primary/20 bg-white dark:bg-slate-800/50 flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary">sentiment_satisfied</span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Have fun!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Reference -->
+        <section class="px-6 md:px-10 py-16">
+            <div class="max-w-4xl mx-auto">
+                <div class="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">qr_code</span>
+                        Quick Reference
+                    </h2>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-4 rounded-lg bg-white dark:bg-slate-800/80">
+                            <h4 class="font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">computer</span>
+                                Java Edition
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Address:</span>
+                                    <code class="font-mono font-bold text-primary">02031998.xyz</code>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Port:</span>
+                                    <code class="font-mono text-slate-700 dark:text-slate-300">25565</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-lg bg-white dark:bg-slate-800/80">
+                            <h4 class="font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">smartphone</span>
+                                Bedrock Edition
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Address:</span>
+                                    <code class="font-mono font-bold text-primary">02031998.xyz</code>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Port:</span>
+                                    <code class="font-mono text-slate-700 dark:text-slate-300">19132</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-primary/10 py-6 px-6 md:px-10 text-center">
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+                &copy; 2025 CreeperPanel &bull; Connected to <span class="text-primary">02031998.xyz</span>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Fetch Open Mode status
+        async function checkOpenMode() {
+            const badge = document.getElementById('openModeBadge');
+            const banner = document.getElementById('openModeBanner');
+
+            try {
+                const response = await fetch('/api/public/open-mode');
+                if (!response.ok) throw new Error('API error');
+
+                const data = await response.json();
+                const isOpen = data.enabled === true;
+
+                if (isOpen) {
+                    // Open Mode is ON
+                    badge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700';
+                    badge.innerHTML = `
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span class="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Open Mode ON</span>
+                    `;
+                    banner.classList.remove('hidden');
+                } else {
+                    // Open Mode is OFF
+                    badge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700';
+                    badge.innerHTML = `
+                        <span class="material-symbols-outlined text-sm text-slate-400">lock</span>
+                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Whitelist Only</span>
+                    `;
+                    banner.classList.add('hidden');
+                }
+            } catch (error) {
+                // Error fetching status
+                badge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700';
+                badge.innerHTML = `
+                    <span class="material-symbols-outlined text-sm text-slate-400">help</span>
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Status Unknown</span>
+                `;
+            }
+        }
+
+        // Check on page load
+        document.addEventListener('DOMContentLoaded', checkOpenMode);
+
+        // Refresh every 30 seconds
+        setInterval(checkOpenMode, 30000);
+    </script>
+</body>
+</html>

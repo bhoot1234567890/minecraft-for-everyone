@@ -1,0 +1,39 @@
+# Geyser Configuration for Velocity
+# https://wiki.geysermc.org/geyser/setup/
+
+bedrock:
+  # The IP address that Geyser will bind to
+  address: 0.0.0.0
+  # The port that Geyser will listen on (Bedrock)
+  port: 19132
+  # Clone the remote port (Velocity's Java port)
+  clone-remote-port: false
+
+remote:
+  # The IP address of the remote server (Velocity)
+  address: auto
+  # The port of the remote server
+  port: 25577
+  # Authentication type - floodgate for cracked Bedrock
+  auth-type: floodgate
+
+# General settings
+general:
+  # Whether to forward the MOTD from the remote server
+  forward-hostname: true
+  # Enable debug mode
+  debug-mode: false
+
+# Scoreboard settings
+scoreboard:
+  # Use the scoreboard from the remote server
+  enabled: true
+
+# Custom MOTD
+motd:
+  motd1: "§aMinecraft Server"
+  motd2: "§7Bedrock & Java Crossplay"
+
+# Metrics
+metrics:
+  enabled: false

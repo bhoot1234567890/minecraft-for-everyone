@@ -1,0 +1,64 @@
+# OS and editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+*.pem
+proxy-data/forwarding.secret
+
+# Logs and temporary files
+*.log
+*.log.*
+*.pid
+*.tmp
+*.temp
+backups/
+monitoring/
+**/logs/
+**/.cache/
+
+# Dependency and build output
+node_modules/
+dist/
+coverage/
+tmp/
+temp/
+velocity-whitelist-router/.gradle/
+velocity-whitelist-router/build/
+velocity-whitelist-router/out/
+
+# Runtime Minecraft server data
+data/
+plugins-output/
+shared-whitelist/*.json
+whitelist-manager/data/*.json
+
+# Paper runtime state: keep only the checked-in config needed to reproduce setup
+main-data/**
+!main-data/config/
+!main-data/config/paper-global.yml
+!main-data/config/paper-world-defaults.yml
+!main-data/server.properties
+
+# PicoLimbo runtime state: keep only the server config
+limbo-data/**
+!limbo-data/server.properties
+!limbo-data/server.toml
+
+# Velocity runtime state: keep the proxy config and Geyser config, ignore generated jars/plugins/logs
+proxy-data/**
+!proxy-data/config/
+!proxy-data/config/Geyser-Velocity/
+!proxy-data/config/Geyser-Velocity/config.yml
+!proxy-data/velocity.toml

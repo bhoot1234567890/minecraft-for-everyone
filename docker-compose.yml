@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  minecraft:
+    image: itzg/minecraft-server:latest
+    container_name: minecraft-server
+    environment:
+      EULA: "TRUE"
+      TYPE: "PAPER"
+      VERSION: "1.21.11"
+      ONLINE_MODE: "FALSE"
+      SERVER_NAME: "Cracked Minecraft Server"
+      MOTD: "Welcome to the Cracked Server!"
+      MAX_PLAYERS: 20
+      SEED: ""
+      WORLD: ""
+      MODE: "survival"
+      PVP: "true"
+      DIFFICULTY: "normal"
+      HARDCORE: "false"
+      MAX_WORLD_SIZE: "29999984"
+      ALLOW_NETHER: "true"
+      ANNOUNCE_PLAYER_ACHIEVEMENTS: "true"
+      ENABLE_COMMAND_BLOCK: "false"
+      SPAWN_PROTECTION: "16"
+      VIEW_DISTANCE: "10"
+      SNOOPER_ENABLED: "false"
+      WHITELIST: "bhoot_redux"
+      ENFORCE_WHITELIST: "true"
+      MEMORY: "2G"
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  whitelist-manager:
+    build: ./whitelist-manager
+    container_name: whitelist-manager
+    environment:
+      WHITELIST_PATH: /data/whitelist.json
+      BANS_PATH: /data/banned-players.json
+      PORT: "3000"
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: minecraft123
+      MINECRAFT_CONTAINER: minecraft-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
