@@ -52,7 +52,7 @@ public class WhitelistRouterPlugin {
 
     private final Set<String> whitelistedUuids = ConcurrentHashMap.newKeySet();
     private final Map<String, WhitelistEntry> whitelistEntries = new ConcurrentHashMap<>();
-    private final Map<String, PendingPlayer> pendingBedrockPlayers = new ConcurrentHashMap<>();
+    private final Map<String, PendingPlayer> pendingPlayers = new ConcurrentHashMap<>();
     private final Map<String, BlockedPlayer> blockedPlayers = new ConcurrentHashMap<>();
 
     private Path whitelistFile;
@@ -206,10 +206,7 @@ public class WhitelistRouterPlugin {
             if (limbo.isPresent()) {
                 logger.info("Player {} not whitelisted, routing to limbo", correctedName);
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(limbo.get()));
-
-                if (isBedrock && xuid != null) {
-                    captureBedrockPlayer(correctedName, xuid, canonicalUuid);
-                }
+                capturePendingPlayer(correctedName, canonicalUuid, isBedrock ? "bedrock" : "java", xuid);
             } else {
                 logger.warn("Limbo server not found! Player {} will be disconnected", correctedName);
                 event.setResult(ServerPreConnectEvent.ServerResult.denied());
@@ -233,18 +230,30 @@ public class WhitelistRouterPlugin {
         loadBlockedPlayers();
     }
 
-    private void captureBedrockPlayer(String name, String xuid, String floodgateUuid) {
+    private void capturePendingPlayer(String name, String uuid, String platform, String xuid) {
         String key = normalizePendingKey(name);
-        if (!pendingBedrockPlayers.containsKey(key)) {
-            PendingPlayer pending = new PendingPlayer();
+        PendingPlayer pending = pendingPlayers.get(key);
+        if (pending == null) {
+            pending = new PendingPlayer();
             pending.name = name;
-            pending.xuid = xuid;
-            pending.floodgateUuid = canonicalizeUuid(floodgateUuid);
             pending.capturedAt = System.currentTimeMillis();
-            pendingBedrockPlayers.put(key, pending);
-            savePendingPlayers();
-            logger.info("Captured pending Bedrock player: {} (XUID: {})", name, xuid);
         }
+        pending.name = name;
+        pending.uuid = canonicalizeUuid(uuid);
+        pending.platform = platform == null || platform.isBlank() ? "java" : platform;
+        pending.xuid = xuid;
+        if ("bedrock".equalsIgnoreCase(pending.platform)) {
+            pending.floodgateUuid = pending.uuid;
+        }
+        pendingPlayers.put(key, pending);
+        savePendingPlayers();
+        logger.info(
+            "Captured pending {} player: {} ({}){}",
+            pending.platform,
+            name,
+            pending.uuid,
+            xuid != null && !xuid.isBlank() ? " with XUID " + xuid : ""
+        );
     }
 
     public synchronized void loadWhitelist() {
@@ -300,7 +309,7 @@ public class WhitelistRouterPlugin {
     }
 
     private synchronized void loadPendingPlayers() {
-        pendingBedrockPlayers.clear();
+        pendingPlayers.clear();
         try {
             if (!Files.exists(pendingFile)) {
                 writeFileAtomically(pendingFile, gson.toJson(Map.of("entries", List.of())));
@@ -334,10 +343,19 @@ public class WhitelistRouterPlugin {
                 if (pendingPlayer.floodgateUuid != null && !pendingPlayer.floodgateUuid.isBlank()) {
                     pendingPlayer.floodgateUuid = canonicalizeUuid(pendingPlayer.floodgateUuid);
                 }
-                pendingBedrockPlayers.put(normalizePendingKey(pendingPlayer.name), pendingPlayer);
+                if ((pendingPlayer.uuid == null || pendingPlayer.uuid.isBlank()) && pendingPlayer.floodgateUuid != null && !pendingPlayer.floodgateUuid.isBlank()) {
+                    pendingPlayer.uuid = pendingPlayer.floodgateUuid;
+                }
+                if (pendingPlayer.uuid != null && !pendingPlayer.uuid.isBlank()) {
+                    pendingPlayer.uuid = canonicalizeUuid(pendingPlayer.uuid);
+                }
+                if (pendingPlayer.platform == null || pendingPlayer.platform.isBlank()) {
+                    pendingPlayer.platform = pendingPlayer.xuid != null && !pendingPlayer.xuid.isBlank() ? "bedrock" : "java";
+                }
+                pendingPlayers.put(normalizePendingKey(pendingPlayer.name), pendingPlayer);
             }
 
-            logger.info("Loaded {} pending Bedrock players", pendingBedrockPlayers.size());
+            logger.info("Loaded {} pending requests", pendingPlayers.size());
         } catch (Exception e) {
             logger.error("Failed to load pending players", e);
         }
@@ -345,7 +363,7 @@ public class WhitelistRouterPlugin {
 
     private synchronized void savePendingPlayers() {
         try {
-            List<PendingPlayer> entries = new ArrayList<>(pendingBedrockPlayers.values());
+            List<PendingPlayer> entries = new ArrayList<>(pendingPlayers.values());
             entries.sort(Comparator.comparing(entry -> entry.name == null ? "" : entry.name.toLowerCase(Locale.ROOT)));
             writeFileAtomically(pendingFile, gson.toJson(Map.of("entries", entries)));
         } catch (Exception e) {
@@ -449,20 +467,26 @@ public class WhitelistRouterPlugin {
         return whitelistEntries.size();
     }
 
-    public Map<String, PendingPlayer> getPendingBedrockPlayers() {
-        return pendingBedrockPlayers;
+    public Map<String, PendingPlayer> getPendingPlayers() {
+        return pendingPlayers;
     }
 
-    public synchronized void approvePlayer(String name) {
+    public synchronized ApprovalResult approvePlayer(String name) {
         PendingPlayer pending = removePendingPlayer(name);
         if (pending == null) {
             logger.warn("Pending player not found for approval: {}", name);
-            return;
+            return ApprovalResult.notFound(name);
         }
 
-        addToWhitelist(pending.floodgateUuid, pending.name);
+        addToWhitelist(resolvePendingUuid(pending), pending.name);
         savePendingPlayers();
-        logger.info("Approved player: {}", pending.name);
+        boolean movedToMain = movePendingPlayerToMainIfConnected(pending);
+        logger.info(
+            "Approved player: {}{}",
+            pending.name,
+            movedToMain ? " and moved them to main" : ""
+        );
+        return ApprovalResult.approved(pending.name, movedToMain);
     }
 
     public synchronized void addToWhitelist(String uuid, String name) {
@@ -473,9 +497,40 @@ public class WhitelistRouterPlugin {
         blockedPlayers.remove(canonicalUuid);
         whitelistedUuids.add(canonicalUuid);
         whitelistedUuids.add(stripDashes(canonicalUuid));
+        PendingPlayer removedPending = removePendingPlayer(entry.name);
         saveWhitelist();
         saveBlockedPlayers();
+        if (removedPending != null) {
+            savePendingPlayers();
+        }
         logger.info("Added {} ({}) to whitelist", entry.name, canonicalUuid);
+    }
+
+    public synchronized boolean removeWhitelistEntry(String uuid, String name) {
+        String canonicalUuid = null;
+        if (uuid != null && !uuid.isBlank()) {
+            try {
+                canonicalUuid = canonicalizeUuid(uuid);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        WhitelistEntry entry = canonicalUuid != null ? whitelistEntries.get(canonicalUuid) : null;
+        if (entry == null && name != null && !name.isBlank()) {
+            entry = findWhitelistEntryByName(name);
+            if (entry != null) {
+                canonicalUuid = canonicalizeUuid(entry.uuid);
+            }
+        }
+
+        if (entry == null || canonicalUuid == null) {
+            return false;
+        }
+
+        removeFromWhitelist(canonicalUuid);
+        saveWhitelist();
+        logger.info("Removed {} ({}) from whitelist", entry.name, canonicalUuid);
+        return true;
     }
 
     public synchronized void setPlayerActive(String uuid, String name, boolean active) {
@@ -578,14 +633,83 @@ public class WhitelistRouterPlugin {
         }
 
         String normalized = normalizePendingKey(name);
-        PendingPlayer pending = pendingBedrockPlayers.remove(normalized);
+        PendingPlayer pending = pendingPlayers.remove(normalized);
         if (pending == null && !normalized.startsWith(".")) {
-            pending = pendingBedrockPlayers.remove("." + normalized);
+            pending = pendingPlayers.remove("." + normalized);
         }
         if (pending == null && normalized.startsWith(".")) {
-            pending = pendingBedrockPlayers.remove(normalized.substring(1));
+            pending = pendingPlayers.remove(normalized.substring(1));
         }
         return pending;
+    }
+
+    public PendingPlayerConnection getPendingPlayerConnection(PendingPlayer pendingPlayer) {
+        Optional<Player> onlinePlayer = findOnlinePlayer(pendingPlayer);
+        if (onlinePlayer.isEmpty()) {
+            return PendingPlayerConnection.offline();
+        }
+
+        String currentServer = onlinePlayer.get()
+            .getCurrentServer()
+            .map(serverConnection -> serverConnection.getServerInfo().getName())
+            .orElse("proxy");
+        boolean onlineInLimbo = "limbo".equalsIgnoreCase(currentServer);
+        return new PendingPlayerConnection(true, onlineInLimbo, currentServer);
+    }
+
+    private Optional<Player> findOnlinePlayer(PendingPlayer pendingPlayer) {
+        String pendingUuid = pendingPlayer.uuid;
+        if (pendingUuid != null && !pendingUuid.isBlank()) {
+            try {
+                Optional<Player> byUuid = server.getPlayer(UUID.fromString(canonicalizeUuid(pendingUuid)));
+                if (byUuid.isPresent()) {
+                    return byUuid;
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        for (Player onlinePlayer : server.getAllPlayers()) {
+            if (onlinePlayer.getUsername().equalsIgnoreCase(pendingPlayer.name)) {
+                return Optional.of(onlinePlayer);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private boolean movePendingPlayerToMainIfConnected(PendingPlayer pendingPlayer) {
+        Optional<Player> onlinePlayer = findOnlinePlayer(pendingPlayer);
+        if (onlinePlayer.isEmpty()) {
+            return false;
+        }
+
+        Optional<RegisteredServer> main = server.getServer("main");
+        if (main.isEmpty()) {
+            logger.warn("Main server not found while approving {}", pendingPlayer.name);
+            return false;
+        }
+
+        String currentServer = onlinePlayer.get()
+            .getCurrentServer()
+            .map(serverConnection -> serverConnection.getServerInfo().getName())
+            .orElse("");
+        if (!"limbo".equalsIgnoreCase(currentServer)) {
+            return false;
+        }
+
+        onlinePlayer.get().createConnectionRequest(main.get()).fireAndForget();
+        return true;
+    }
+
+    private String resolvePendingUuid(PendingPlayer pendingPlayer) {
+        if (pendingPlayer.uuid != null && !pendingPlayer.uuid.isBlank()) {
+            return canonicalizeUuid(pendingPlayer.uuid);
+        }
+        if (pendingPlayer.floodgateUuid != null && !pendingPlayer.floodgateUuid.isBlank()) {
+            return canonicalizeUuid(pendingPlayer.floodgateUuid);
+        }
+        throw new IllegalArgumentException("Pending player does not have a UUID: " + pendingPlayer.name);
     }
 
     private String normalizePendingKey(String name) {
@@ -645,9 +769,47 @@ public class WhitelistRouterPlugin {
 
     public static class PendingPlayer {
         public String name;
+        public String uuid;
+        public String platform;
         public String xuid;
         public String floodgateUuid;
         public long capturedAt;
+    }
+
+    public static class PendingPlayerConnection {
+        public final boolean online;
+        public final boolean onlineInLimbo;
+        public final String currentServer;
+
+        public PendingPlayerConnection(boolean online, boolean onlineInLimbo, String currentServer) {
+            this.online = online;
+            this.onlineInLimbo = onlineInLimbo;
+            this.currentServer = currentServer;
+        }
+
+        public static PendingPlayerConnection offline() {
+            return new PendingPlayerConnection(false, false, "offline");
+        }
+    }
+
+    public static class ApprovalResult {
+        public final boolean success;
+        public final String name;
+        public final boolean movedToMain;
+
+        private ApprovalResult(boolean success, String name, boolean movedToMain) {
+            this.success = success;
+            this.name = name;
+            this.movedToMain = movedToMain;
+        }
+
+        public static ApprovalResult approved(String name, boolean movedToMain) {
+            return new ApprovalResult(true, name, movedToMain);
+        }
+
+        public static ApprovalResult notFound(String name) {
+            return new ApprovalResult(false, name, false);
+        }
     }
 
     public static class BlockedPlayer {

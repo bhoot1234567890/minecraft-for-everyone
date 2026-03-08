@@ -73,7 +73,7 @@ Add a player to the dashboard-managed list.
 
 #### `DELETE /api/players/:name`
 
-Remove a player from the dashboard list.
+Remove a player from the dashboard list and revoke their proxy whitelist entry.
 
 #### `PUT /api/players/:name/deactivate`
 
@@ -164,15 +164,17 @@ Server-Sent Events stream of the mounted main server log file.
 
 #### `GET /api/proxy/pending`
 
-Fetch pending Bedrock players from the proxy.
+Fetch all pending limbo requests from the proxy, for both Java and Bedrock players.
 
 #### `POST /api/proxy/approve`
 
-Approve a pending Bedrock player in the proxy.
+Approve a pending limbo request in the proxy. If the player is still online in limbo, the proxy attempts to move them into `main` immediately.
 
 ```json
 {
-  "name": ".BedrockPlayer"
+  "name": "PlayerName",
+  "uuid": "optional-uuid",
+  "platform": "java"
 }
 ```
 
@@ -184,7 +186,7 @@ Example response:
 {
   "online": true,
   "whitelisted": 5,
-  "pending_bedrock": 0,
+  "pending_requests": 0,
   "open_mode": false,
   "hybrid_auth_mode": false,
   "main_server": true,
@@ -250,10 +252,15 @@ Example response:
 {
   "pending": [
     {
-      "name": ".BedrockPlayer",
-      "xuid": "2535...",
-      "floodgate_uuid": "00000000-0000-0000-0009-...",
-      "captured_at": 1772910000000
+      "name": "PlayerName",
+      "uuid": "6e3aaadb-1dd4-33f2-bd07-7fa5c93b0626",
+      "platform": "java",
+      "xuid": "",
+      "floodgate_uuid": "",
+      "captured_at": 1772930593610,
+      "online": true,
+      "online_in_limbo": true,
+      "current_server": "limbo"
     }
   ]
 }
@@ -261,11 +268,11 @@ Example response:
 
 ### `POST /api/approve`
 
-Approve and persist a pending Bedrock player.
+Approve and persist a pending limbo player.
 
 ```json
 {
-  "name": ".BedrockPlayer"
+  "name": "PlayerName"
 }
 ```
 
@@ -279,6 +286,10 @@ Directly add a player to the proxy whitelist.
   "name": ".WinterMist88971"
 }
 ```
+
+### `POST /api/whitelist/remove`
+
+Remove a player from the proxy whitelist without blocking them.
 
 ### `GET /api/open-mode`
 
@@ -347,8 +358,8 @@ Available in Velocity with `whitelistrouter.admin`:
 | Command | Purpose |
 |---|---|
 | `/wlr list` | Show whitelist entry count |
-| `/wlr pending` | Show pending Bedrock players |
-| `/wlr approve <name>` | Approve pending Bedrock player |
+| `/wlr pending` | Show pending limbo requests |
+| `/wlr approve <name>` | Approve pending limbo player |
 | `/wlr add <uuid> <name>` | Add a whitelist entry |
 | `/wlr reload` | Reload proxy plugin state |
 | `/wlr openmode <on\|off>` | Toggle Open Mode |

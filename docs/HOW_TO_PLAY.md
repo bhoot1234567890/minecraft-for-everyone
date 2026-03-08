@@ -122,6 +122,7 @@ If your account is not approved, you will not reach the main world.
 
 - Unapproved Java or Bedrock players are sent to the holding server instead of the main world
 - Ask an admin to whitelist or approve you first
+- Admins can now approve you from the `/admin` Pending Requests view; if you are still in limbo when approved, the proxy will immediately try to move you into the main server
 
 ---
 
@@ -234,7 +235,7 @@ Common causes:
 
 - **In-game:** Ask in chat if you can already reach the main world
 - **Approval issues:** Contact an admin to get whitelisted or approved
-- **Dashboard:** Admins should use the locally bound panel at `http://localhost:3000`
+- **Dashboard:** Admins should use the locally bound panel at `http://localhost:3000/admin`
 
 ---
 

@@ -46,10 +46,11 @@
 <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">CreeperPanel</h2>
 </div>
 <nav class="hidden md:flex items-center gap-6">
-<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('dashboard'); return false;">Dashboard</a>
-<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#" onclick="showSection('whitelist'); return false;" id="nav-whitelist">Whitelist</a>
-<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('logs'); return false;" id="nav-logs">Server Logs</a>
-<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Settings</a>
+        <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('dashboard'); return false;" id="nav-dashboard">Dashboard</a>
+        <a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#" onclick="showSection('whitelist'); return false;" id="nav-whitelist">Whitelist</a>
+        <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('requests'); return false;" id="nav-requests">Pending Requests</a>
+        <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#" onclick="showSection('logs'); return false;" id="nav-logs">Server Logs</a>
+        <a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Settings</a>
 </nav>
 </div>
 <div class="flex flex-1 justify-end items-center gap-4">
@@ -226,6 +227,73 @@
 </div>
 </div>
 
+<!-- Pending Requests Section -->
+<div id="section-requests" class="section-content hidden">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black leading-tight tracking-tight">Pending Requests</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal">Anyone who reaches PicoLimbo because they are not whitelisted appears here. Approving them whitelists the player and sends them to Main immediately if they are still online in limbo.</p>
+</div>
+<div class="flex gap-2">
+<button onclick="loadPendingRequests()" class="flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-background-dark px-4 py-3 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span>Refresh Requests</span>
+</button>
+</div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Pending Total</p>
+<p id="pendingRequestsCount" class="mt-2 text-slate-900 dark:text-slate-100 text-3xl font-bold">-</p>
+</div>
+<div class="rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Online In Limbo</p>
+<p id="limboOnlineCount" class="mt-2 text-slate-900 dark:text-slate-100 text-3xl font-bold">-</p>
+</div>
+<div class="rounded-xl p-6 bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Last Refresh</p>
+<p id="pendingRequestsUpdatedAt" class="mt-2 text-slate-900 dark:text-slate-100 text-base font-semibold">Waiting...</p>
+</div>
+</div>
+
+<div class="rounded-xl border border-primary/10 bg-primary/5 p-6 mb-6">
+<div class="flex items-start gap-3">
+<div class="size-10 rounded-lg bg-primary/15 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">moving</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Live limbo approvals</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Use this queue for non-whitelisted Java or Bedrock visitors. A green status means the player is currently connected to PicoLimbo and can be moved into Main as soon as you approve.</p>
+</div>
+</div>
+</div>
+
+<div class="overflow-hidden rounded-xl bg-white dark:bg-primary/5 border border-primary/10 shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 dark:bg-primary/10 text-slate-600 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+<th class="px-6 py-4">Player</th>
+<th class="px-6 py-4">Identity</th>
+<th class="px-6 py-4">Seen</th>
+<th class="px-6 py-4">Live Status</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody id="pendingRequestsTableBody" class="divide-y divide-primary/10">
+<tr>
+<td colspan="5" class="px-6 py-12 text-center text-slate-500">
+<span class="material-symbols-outlined text-4xl mb-4 animate-spin">refresh</span>
+<p>Loading pending requests...</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
 <!-- Server Logs Section -->
 <div id="section-logs" class="section-content hidden">
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -301,6 +369,7 @@ let eventSource = null;
 let autoScroll = true;
 let currentFilter = 'ALL';
 let logEntries = [];
+let currentPendingRequests = [];
 
 // Helper function to get auth headers
 function getAuthHeaders() {
@@ -343,6 +412,29 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function setNavActive(navId, active) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+
+    if (active) {
+        nav.className = 'text-primary text-sm font-bold border-b-2 border-primary pb-1';
+        return;
+    }
+
+    nav.className = 'text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors';
+}
+
+function showSection(sectionName) {
+    const effectiveSection = sectionName === 'dashboard' ? 'whitelist' : sectionName;
+    document.querySelectorAll('.section-content').forEach(section => section.classList.add('hidden'));
+    document.getElementById(`section-${effectiveSection}`)?.classList.remove('hidden');
+
+    setNavActive('nav-dashboard', sectionName === 'dashboard');
+    setNavActive('nav-whitelist', sectionName === 'whitelist');
+    setNavActive('nav-requests', sectionName === 'requests');
+    setNavActive('nav-logs', sectionName === 'logs');
 }
 
 // Authentication
@@ -519,6 +611,9 @@ async function loadPlayers() {
                                 <span class="material-symbols-outlined text-[20px]">check_circle</span>
                             </button>`
                         }
+                        <button onclick="removePlayer('${escapeHtml(player.name)}')" class="p-2 hover:bg-red-500/20 rounded-lg text-red-500 transition-colors" title="Remove From Whitelist">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -702,30 +797,6 @@ async function syncWhitelist(event) {
     }
 }
 
-async function removePlayer(name) {
-    if (!(await ensureAuth())) return;
-
-    if (!confirm(`Remove ${name} from the whitelist?`)) return;
-
-    try {
-        const response = await fetch(`${API_BASE}/players/${name}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders()
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            showNotification(`Removed ${name} from whitelist!`);
-            await loadDashboard();
-        } else {
-            showNotification(data.error || 'Failed to remove player', 'error');
-        }
-    } catch (error) {
-        showNotification('Connection error', 'error');
-    }
-}
-
 async function promotePlayer(name) {
     if (!(await ensureAuth())) return;
 
@@ -789,6 +860,7 @@ async function loadDashboard() {
         loadStats(),
         loadPlayers(),
         loadPendingPlayers(),
+        loadPendingRequests(),
         loadOpenModeStatus()
     ]);
 }
@@ -936,6 +1008,131 @@ async function loadPendingPlayers() {
         `).join('');
     } catch (error) {
         console.error('Error loading pending players:', error);
+    }
+}
+
+async function loadPendingRequests() {
+    const countEl = document.getElementById('pendingRequestsCount');
+    const limboCountEl = document.getElementById('limboOnlineCount');
+    const updatedAtEl = document.getElementById('pendingRequestsUpdatedAt');
+    const tbody = document.getElementById('pendingRequestsTableBody');
+
+    if (!tbody) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/proxy/pending`, {
+            headers: getAuthHeaders()
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || data.error || 'Failed to load pending requests');
+        }
+
+        currentPendingRequests = Array.isArray(data.pending) ? data.pending : [];
+        const limboOnline = currentPendingRequests.filter(player => player.online_in_limbo).length;
+
+        if (countEl) countEl.textContent = currentPendingRequests.length;
+        if (limboCountEl) limboCountEl.textContent = limboOnline;
+        if (updatedAtEl) updatedAtEl.textContent = new Date().toLocaleString();
+
+        if (currentPendingRequests.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                        <span class="material-symbols-outlined text-4xl mb-4">mark_email_read</span>
+                        <p>No pending limbo requests right now.</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = currentPendingRequests.map(player => {
+            const platformLabel = player.platform === 'bedrock' ? '📱 Bedrock' : '☕ Java';
+            const statusClasses = player.online_in_limbo
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                : player.online
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                    : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200';
+            const statusLabel = player.online_in_limbo
+                ? 'Online in Limbo'
+                : player.online
+                    ? `Online on ${player.current_server || 'proxy'}`
+                    : 'Offline';
+            const capturedAt = player.captured_at ? formatDate(new Date(player.captured_at).toISOString()) : 'Unknown';
+            const identityText = player.platform === 'bedrock'
+                ? (player.xuid ? `XUID ${escapeHtml(player.xuid)}` : 'Floodgate identity')
+                : `${escapeHtml((player.uuid || '').substring(0, 12))}${player.uuid ? '...' : 'Offline UUID pending'}`;
+
+            return `
+                <tr class="hover:bg-primary/5 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img class="size-10 rounded-md bg-background-light dark:bg-background-dark"
+                                 src="https://mc-heads.net/avatar/${escapeHtml(player.name)}/40"
+                                 alt="${escapeHtml(player.name)}">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-900 dark:text-slate-100">${escapeHtml(player.name)}</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400">${platformLabel}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400 font-mono">${identityText}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">${capturedAt}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${statusClasses}">
+                            ${statusLabel}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="approvePendingRequest('${escapeHtml(player.name)}', '${escapeHtml(player.uuid || '')}', '${escapeHtml(player.platform || 'java')}')" class="inline-flex items-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-background-dark px-4 py-2 text-sm font-bold transition-all">
+                            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                            <span>Approve</span>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading pending requests:', error);
+        if (countEl) countEl.textContent = '-';
+        if (limboCountEl) limboCountEl.textContent = '-';
+        if (updatedAtEl) updatedAtEl.textContent = 'Unavailable';
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-red-500">
+                    <span class="material-symbols-outlined text-4xl mb-4">error</span>
+                    <p>${escapeHtml(error.message || 'Failed to load pending requests')}</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+async function approvePendingRequest(name, uuid, platform) {
+    if (!(await ensureAuth())) return;
+
+    if (!confirm(`Approve ${name}? If they are still online in limbo, they will be moved into Main immediately.`)) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/proxy/approve`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ name, uuid, platform })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || data.error || 'Failed to approve request');
+        }
+
+        const movedMessage = data.moved_to_main ? ' They were moved to Main immediately.' : '';
+        showNotification(`${name} approved.${movedMessage}`);
+        await loadPendingRequests();
+        await loadPlayers();
+        await loadStats();
+    } catch (error) {
+        showNotification(error.message || 'Connection error', 'error');
     }
 }
 

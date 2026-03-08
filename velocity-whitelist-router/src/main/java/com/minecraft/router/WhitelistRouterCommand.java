@@ -54,7 +54,7 @@ public class WhitelistRouterCommand implements RawCommand {
         invocation.source().sendMessage(Component.text()
             .append(Component.text("=== WhitelistRouter Commands ===\n", NamedTextColor.GOLD))
             .append(Component.text("/wlr list - Show whitelisted players\n", NamedTextColor.YELLOW))
-            .append(Component.text("/wlr pending - Show pending Bedrock players\n", NamedTextColor.YELLOW))
+            .append(Component.text("/wlr pending - Show pending limbo requests\n", NamedTextColor.YELLOW))
             .append(Component.text("/wlr approve <name> - Approve pending player\n", NamedTextColor.YELLOW))
             .append(Component.text("/wlr add <uuid> <name> - Add player to whitelist\n", NamedTextColor.YELLOW))
             .append(Component.text("/wlr reload - Reload whitelist\n", NamedTextColor.YELLOW))
@@ -68,19 +68,21 @@ public class WhitelistRouterCommand implements RawCommand {
     }
 
     private void handlePending(Invocation invocation) {
-        var pending = plugin.getPendingBedrockPlayers();
+        var pending = plugin.getPendingPlayers();
         if (pending.isEmpty()) {
-            invocation.source().sendMessage(Component.text("No pending Bedrock players", NamedTextColor.YELLOW));
+            invocation.source().sendMessage(Component.text("No pending limbo requests", NamedTextColor.YELLOW));
             return;
         }
 
-        invocation.source().sendMessage(Component.text("=== Pending Bedrock Players ===", NamedTextColor.GOLD));
+        invocation.source().sendMessage(Component.text("=== Pending Limbo Requests ===", NamedTextColor.GOLD));
         for (var entry : pending.values()) {
             String time = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format(new java.util.Date(entry.capturedAt));
+            var connection = plugin.getPendingPlayerConnection(entry);
             invocation.source().sendMessage(Component.text()
                 .append(Component.text("• ", NamedTextColor.GRAY))
                 .append(Component.text(entry.name, NamedTextColor.GREEN))
-                .append(Component.text(" (XUID: " + entry.xuid + ") ", NamedTextColor.YELLOW))
+                .append(Component.text(" (" + (entry.platform == null ? "java" : entry.platform) + ") ", NamedTextColor.YELLOW))
+                .append(Component.text(connection.onlineInLimbo ? "[online in limbo] " : "[offline] ", connection.onlineInLimbo ? NamedTextColor.AQUA : NamedTextColor.GRAY))
                 .append(Component.text("[" + time + "]", NamedTextColor.GRAY))
                 .build());
         }
@@ -93,7 +95,7 @@ public class WhitelistRouterCommand implements RawCommand {
         }
 
         String name = args[1];
-        var pending = plugin.getPendingBedrockPlayers();
+        var pending = plugin.getPendingPlayers();
         String key = name.toLowerCase().replace(".", "");
 
         // Try to find with or without dot prefix
@@ -110,8 +112,19 @@ public class WhitelistRouterCommand implements RawCommand {
             return;
         }
 
-        plugin.approvePlayer(player.name);
-        invocation.source().sendMessage(Component.text("Approved player: " + player.name + " (XUID: " + player.xuid + ")", NamedTextColor.GREEN));
+        var result = plugin.approvePlayer(player.name);
+        if (!result.success) {
+            invocation.source().sendMessage(Component.text("Pending request not found: " + name, NamedTextColor.RED));
+            return;
+        }
+        invocation.source().sendMessage(
+            Component.text(
+                result.movedToMain
+                    ? "Approved player: " + player.name + " and moved them to main"
+                    : "Approved player: " + player.name,
+                NamedTextColor.GREEN
+            )
+        );
     }
 
     private void handleAdd(Invocation invocation, String[] args) {
@@ -160,7 +173,7 @@ public class WhitelistRouterCommand implements RawCommand {
         invocation.source().sendMessage(Component.text()
             .append(Component.text("=== WhitelistRouter Status ===\n", NamedTextColor.GOLD))
             .append(Component.text("Whitelisted: " + plugin.getWhitelistEntryCount() + "\n", NamedTextColor.GREEN))
-            .append(Component.text("Pending Bedrock: " + plugin.getPendingBedrockPlayers().size() + "\n", NamedTextColor.YELLOW))
+            .append(Component.text("Pending Requests: " + plugin.getPendingPlayers().size() + "\n", NamedTextColor.YELLOW))
             .append(Component.text("Open Mode: " + (plugin.isOpenModeEnabled() ? "ON" : "OFF") + "\n", plugin.isOpenModeEnabled() ? NamedTextColor.GREEN : NamedTextColor.YELLOW))
             .append(Component.text("Main Server: " + (main.isPresent() ? "✓" : "✗") + "\n", main.isPresent() ? NamedTextColor.GREEN : NamedTextColor.RED))
             .append(Component.text("Limbo Server: " + (limbo.isPresent() ? "✓" : "✗"), limbo.isPresent() ? NamedTextColor.GREEN : NamedTextColor.RED))

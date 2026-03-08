@@ -6,7 +6,9 @@ This repository runs a proxy-first Minecraft network:
 
 - **Java players** connect to **Velocity** on port `25565`
 - **Bedrock players** connect to **Geyser-on-Velocity** on UDP port `19132`
-- **Dashboard admins** use the whitelist manager on `127.0.0.1:3000`
+- **Public website visitors** land on `127.0.0.1:3000/`
+- **Players** can use the browser guide at `127.0.0.1:3000/play`
+- **Dashboard admins** use the whitelist manager at `127.0.0.1:3000/admin`
 - **Whitelisted premium Java players** are validated by **FastLogin** against Mojang and go straight to the **main Paper** server
 - **Whitelisted cracked Java players** also reach **main**, where **OptionalAuthGuard** either warns them every join or requires `/login` if they enabled a password
 - **Whitelisted Bedrock players** keep using **Floodgate/XUID** identity and do not need a Java password flow
@@ -93,7 +95,9 @@ PicoLimbo is configured for **Velocity Modern Forwarding**, which is required fo
 The dashboard provides:
 
 - login-protected admin access
-- whitelist and pending Bedrock visibility
+- whitelist visibility plus a pending limbo-request queue for Java and Bedrock
+- approve-and-move flow for players currently online in limbo
+- remove-from-whitelist controls
 - activate/deactivate controls
 - log viewing
 - proxy-side blocked-player access control via authenticated internal API
@@ -188,7 +192,7 @@ This keeps deactivated players blocked even if Open Mode is re-enabled later.
 These files are shared between the proxy and the dashboard through `shared-whitelist/`:
 
 - `shared-whitelist/whitelist.json`
-- `shared-whitelist/pending_bedrock.json`
+- `shared-whitelist/pending_bedrock.json` (legacy filename, now stores all pending limbo requests)
 - `shared-whitelist/banned-players.json`
 
 The proxy remains the effective source of truth for access control.

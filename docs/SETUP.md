@@ -245,7 +245,7 @@ For shared whitelist files, align ownership with the Velocity container user or 
 Open:
 
 ```text
-http://localhost:3000
+http://localhost:3000/admin
 ```
 
 Credentials come from `.env`:
@@ -254,6 +254,12 @@ Credentials come from `.env`:
 - `ADMIN_PASSWORD`
 
 The dashboard is intentionally bound to localhost only in the recommended compose file.
+
+Public browser routes on the same service:
+
+- `/` -> public landing page
+- `/play` -> public how-to-play page
+- `/admin` -> admin dashboard
 
 ## 6. Backups and monitoring
 

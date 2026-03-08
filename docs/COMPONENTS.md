@@ -10,7 +10,7 @@
 
 - whitelist-based routing between `main` and `limbo`
 - blocked-player enforcement for deactivated users
-- pending Bedrock capture and approval support
+- pending limbo capture and approval support for Java and Bedrock
 - token-protected internal HTTP API on port `8080`
 - atomic persistence for whitelist, pending, blocked, and open-mode state files
 
@@ -28,7 +28,7 @@
 #### Shared files
 
 - `shared-whitelist/whitelist.json`
-- `shared-whitelist/pending_bedrock.json`
+- `shared-whitelist/pending_bedrock.json` (legacy filename, now used for all pending limbo requests)
 
 #### Plugin-local files
 
@@ -56,8 +56,8 @@ For Bedrock players the plugin uses:
 | Command | Description |
 |---|---|
 | `/wlr list` | Show whitelist entry count |
-| `/wlr pending` | Show pending Bedrock players |
-| `/wlr approve <name>` | Approve pending Bedrock player |
+| `/wlr pending` | Show pending limbo requests |
+| `/wlr approve <name>` | Approve pending limbo player |
 | `/wlr add <uuid> <name>` | Add player directly |
 | `/wlr reload` | Reload whitelist, pending, blocked, and open-mode state |
 | `/wlr openmode <on\|off>` | Toggle Open Mode |
@@ -166,6 +166,7 @@ That means:
 
 - **Deactivate** updates both dashboard state and proxy access state
 - **Activate** restores both dashboard state and proxy whitelist access
+- **Remove** deletes the dashboard entry and removes proxy whitelist access without blocking
 - the player list merges proxy blocked users back into the dashboard so inactive users stay visible
 - dashboard auth depends on env-provided credentials instead of baked-in defaults
 - the container no longer mounts `/var/run/docker.sock`

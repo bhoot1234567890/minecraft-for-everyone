@@ -36,6 +36,7 @@ public class ApiServer {
         server.createContext("/api/pending", new PendingHandler());
         server.createContext("/api/blocked", new BlockedHandler());
         server.createContext("/api/whitelist", new WhitelistHandler());
+        server.createContext("/api/whitelist/remove", new RemoveWhitelistHandler());
         server.createContext("/api/approve", new ApproveHandler());
         server.createContext("/api/access", new AccessHandler());
         server.createContext("/api/open-mode", new OpenModeHandler());
@@ -63,7 +64,7 @@ public class ApiServer {
                 // Add CORS headers
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                 exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
-                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
                 if ("OPTIONS".equals(method)) {
                     exchange.sendResponseHeaders(200, -1);
@@ -122,12 +123,18 @@ public class ApiServer {
         protected String handleRequest(HttpExchange exchange, String method) throws Exception {
             if ("GET".equals(method)) {
                 List<Map<String, Object>> pending = new ArrayList<>();
-                for (WhitelistRouterPlugin.PendingPlayer p : plugin.getPendingBedrockPlayers().values()) {
+                for (WhitelistRouterPlugin.PendingPlayer p : plugin.getPendingPlayers().values()) {
+                    WhitelistRouterPlugin.PendingPlayerConnection connection = plugin.getPendingPlayerConnection(p);
                     Map<String, Object> entry = new LinkedHashMap<>();
                     entry.put("name", p.name);
+                    entry.put("uuid", p.uuid);
+                    entry.put("platform", p.platform);
                     entry.put("xuid", p.xuid);
                     entry.put("floodgate_uuid", p.floodgateUuid);
                     entry.put("captured_at", p.capturedAt);
+                    entry.put("online", connection.online);
+                    entry.put("online_in_limbo", connection.onlineInLimbo);
+                    entry.put("current_server", connection.currentServer);
                     pending.add(entry);
                 }
                 return gson.toJson(Map.of("pending", pending));
@@ -174,6 +181,24 @@ public class ApiServer {
         }
     }
 
+    class RemoveWhitelistHandler extends BaseHandler {
+        @Override
+        protected String handleRequest(HttpExchange exchange, String method) throws Exception {
+            if (!"POST".equals(method)) {
+                return gson.toJson(Map.of("error", "Method not allowed"));
+            }
+
+            String body = readBody(exchange);
+            Map<String, String> data = gson.fromJson(body, Map.class);
+            String uuid = data.get("uuid");
+            String name = data.get("name");
+            if (plugin.removeWhitelistEntry(uuid, name)) {
+                return gson.toJson(Map.of("success", true, "message", "Removed player from whitelist"));
+            }
+            return gson.toJson(Map.of("error", "Player not found in whitelist"));
+        }
+    }
+
     class ApproveHandler extends BaseHandler {
         @Override
         protected String handleRequest(HttpExchange exchange, String method) throws Exception {
@@ -182,8 +207,15 @@ public class ApiServer {
                 Map<String, String> data = gson.fromJson(body, Map.class);
                 String name = data.get("name");
                 if (name != null) {
-                    plugin.approvePlayer(name);
-                    return gson.toJson(Map.of("success", true, "message", "Approved " + name));
+                    WhitelistRouterPlugin.ApprovalResult result = plugin.approvePlayer(name);
+                    if (!result.success) {
+                        return gson.toJson(Map.of("error", "Pending player not found"));
+                    }
+                    return gson.toJson(Map.of(
+                        "success", true,
+                        "message", "Approved " + name,
+                        "moved_to_main", result.movedToMain
+                    ));
                 }
                 return gson.toJson(Map.of("error", "Name required"));
             }
@@ -196,7 +228,7 @@ public class ApiServer {
         protected String handleRequest(HttpExchange exchange, String method) throws Exception {
             Map<String, Object> status = new LinkedHashMap<>();
             status.put("whitelisted_count", plugin.getWhitelistEntryCount());
-            status.put("pending_count", plugin.getPendingBedrockPlayers().size());
+            status.put("pending_count", plugin.getPendingPlayers().size());
             status.put("blocked_count", plugin.getBlockedPlayers().size());
             status.put("open_mode", plugin.isOpenModeEnabled());
             status.put("hybrid_auth_mode", plugin.isHybridAuthMode());

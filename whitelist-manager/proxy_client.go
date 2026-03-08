@@ -17,12 +17,22 @@ type ProxyClient struct {
 	httpClient *http.Client
 }
 
-// PendingBedrockPlayer represents a pending Bedrock player from the proxy
-type PendingBedrockPlayer struct {
+type PendingProxyPlayer struct {
 	Name          string `json:"name"`
+	UUID          string `json:"uuid"`
+	Platform      string `json:"platform"`
 	XUID          string `json:"xuid"`
 	FloodgateUUID string `json:"floodgate_uuid"`
 	CapturedAt    int64  `json:"captured_at"`
+	Online        bool   `json:"online"`
+	OnlineInLimbo bool   `json:"online_in_limbo"`
+	CurrentServer string `json:"current_server"`
+}
+
+type ApprovePlayerResult struct {
+	Success     bool   `json:"success"`
+	Message     string `json:"message"`
+	MovedToMain bool   `json:"moved_to_main"`
 }
 
 type BlockedPlayer struct {
@@ -75,8 +85,8 @@ func (pc *ProxyClient) newRequest(method, path string, body io.Reader) (*http.Re
 	return req, nil
 }
 
-// GetPendingPlayers fetches pending Bedrock players from the proxy
-func (pc *ProxyClient) GetPendingPlayers() ([]PendingBedrockPlayer, error) {
+// GetPendingPlayers fetches pending limbo requests from the proxy
+func (pc *ProxyClient) GetPendingPlayers() ([]PendingProxyPlayer, error) {
 	req, err := pc.newRequest(http.MethodGet, "/api/pending", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build pending request: %w", err)
@@ -92,7 +102,7 @@ func (pc *ProxyClient) GetPendingPlayers() ([]PendingBedrockPlayer, error) {
 	}
 
 	var result struct {
-		Pending []PendingBedrockPlayer `json:"pending"`
+		Pending []PendingProxyPlayer `json:"pending"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -128,28 +138,39 @@ func (pc *ProxyClient) GetBlockedPlayers() ([]BlockedPlayer, error) {
 	return result.Blocked, nil
 }
 
-// ApprovePlayer approves a pending Bedrock player in the proxy
-func (pc *ProxyClient) ApprovePlayer(name string) error {
+// ApprovePlayer approves a pending player in the proxy
+func (pc *ProxyClient) ApprovePlayer(name string) (*ApprovePlayerResult, error) {
 	body := map[string]string{"name": name}
 	jsonBody, _ := json.Marshal(body)
 
 	req, err := pc.newRequest(http.MethodPost, "/api/approve", bytes.NewBuffer(jsonBody))
 	if err != nil {
-		return fmt.Errorf("failed to build approve request: %w", err)
+		return nil, fmt.Errorf("failed to build approve request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := pc.httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to approve player: %w", err)
+		return nil, fmt.Errorf("failed to approve player: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		respBody, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("proxy API returned status %d: %s", resp.StatusCode, string(respBody))
+		return nil, fmt.Errorf("proxy API returned status %d: %s", resp.StatusCode, string(respBody))
 	}
 
-	return nil
+	var result ApprovePlayerResult
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode approve response: %w", err)
+	}
+	if !result.Success {
+		if result.Message != "" {
+			return nil, fmt.Errorf(result.Message)
+		}
+		return nil, fmt.Errorf("proxy approval failed")
+	}
+
+	return &result, nil
 }
 
 // AddToWhitelist adds a player to the proxy whitelist
@@ -165,6 +186,47 @@ func (pc *ProxyClient) AddToWhitelist(uuid, name string) error {
 	resp, err := pc.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to add to whitelist: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("proxy API returned status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var result struct {
+		Success bool   `json:"success"`
+		Error   string `json:"error"`
+		Message string `json:"message"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return fmt.Errorf("failed to decode whitelist removal response: %w", err)
+	}
+	if !result.Success {
+		if result.Error != "" {
+			return fmt.Errorf(result.Error)
+		}
+		if result.Message != "" {
+			return fmt.Errorf(result.Message)
+		}
+		return fmt.Errorf("proxy whitelist removal failed")
+	}
+
+	return nil
+}
+
+func (pc *ProxyClient) RemoveFromWhitelist(uuid, name string) error {
+	body := map[string]string{"uuid": uuid, "name": name}
+	jsonBody, _ := json.Marshal(body)
+
+	req, err := pc.newRequest(http.MethodPost, "/api/whitelist/remove", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return fmt.Errorf("failed to build whitelist removal request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := pc.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to remove from whitelist: %w", err)
 	}
 	defer resp.Body.Close()
 

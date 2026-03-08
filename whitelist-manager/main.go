@@ -520,6 +520,55 @@ func (wm *WhitelistManager) AddPlayer(name string) error {
 	return wm.saveUnsafe()
 }
 
+func (wm *WhitelistManager) UpsertApprovedPlayer(name, playerUUID, platform string) error {
+	wm.mu.Lock()
+	defer wm.mu.Unlock()
+
+	if strings.TrimSpace(name) == "" {
+		return fmt.Errorf("player name is required")
+	}
+
+	if strings.TrimSpace(playerUUID) == "" {
+		playerUUID = uuid.NewMD5(uuid.NameSpaceDNS, []byte("OfflinePlayer:"+name)).String()
+	}
+
+	if strings.TrimSpace(platform) == "" {
+		if isFloodgatePlayer(name) {
+			platform = "bedrock"
+		} else {
+			platform = "java"
+		}
+	}
+
+	for i, p := range wm.players {
+		if strings.EqualFold(p.Name, name) || strings.EqualFold(p.UUID, playerUUID) {
+			wm.players[i].UUID = playerUUID
+			wm.players[i].Name = name
+			wm.players[i].Active = true
+			wm.players[i].Platform = platform
+			if wm.players[i].Rank == "" {
+				wm.players[i].Rank = "Member"
+			}
+			if wm.players[i].AvatarURL == "" {
+				wm.players[i].AvatarURL = fmt.Sprintf("https://mc-heads.net/avatar/%s/40", name)
+			}
+			return wm.saveUnsafe()
+		}
+	}
+
+	wm.players = append(wm.players, Player{
+		UUID:      playerUUID,
+		Name:      name,
+		LastSeen:  time.Now(),
+		Status:    "offline",
+		Rank:      "Member",
+		Active:    true,
+		AvatarURL: fmt.Sprintf("https://mc-heads.net/avatar/%s/40", name),
+		Platform:  platform,
+	})
+	return wm.saveUnsafe()
+}
+
 func (wm *WhitelistManager) DeactivatePlayer(name string) error {
 	wm.mu.Lock()
 	defer wm.mu.Unlock()
@@ -1020,8 +1069,26 @@ func main() {
 		return c.Next()
 	})
 
-	// Serve static files
-	app.Static("/", "./static")
+	staticDir := "./static"
+	landingPage := filepath.Join(staticDir, "landing.html")
+	adminPage := filepath.Join(staticDir, "index.html")
+	playPage := filepath.Join(staticDir, "play", "index.html")
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendFile(landingPage)
+	})
+	app.Get("/admin", func(c *fiber.Ctx) error {
+		return c.SendFile(adminPage)
+	})
+	app.Get("/admin/", func(c *fiber.Ctx) error {
+		return c.SendFile(adminPage)
+	})
+	app.Get("/play", func(c *fiber.Ctx) error {
+		return c.SendFile(playPage)
+	})
+	app.Get("/play/", func(c *fiber.Ctx) error {
+		return c.SendFile(playPage)
+	})
 
 	// Auth routes
 	api := app.Group("/api")
@@ -1278,6 +1345,20 @@ func addPlayer(c *fiber.Ctx) error {
 
 func removePlayer(c *fiber.Ctx) error {
 	name := c.Params("name")
+	player, err := wm.GetPlayer(name)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	if proxyClient == nil {
+		proxyClient = NewProxyClient()
+	}
+	if err := proxyClient.RemoveFromWhitelist(player.UUID, player.Name); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   "Failed to remove player from proxy whitelist",
+			"message": err.Error(),
+		})
+	}
 
 	if err := wm.RemovePlayer(name); err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": err.Error()})
@@ -1638,7 +1719,9 @@ func syncBlockedPlayersFromProxy() {
 // approveProxyPlayer approves a pending player in the proxy
 func approveProxyPlayer(c *fiber.Ctx) error {
 	type Request struct {
-		Name string `json:"name"`
+		Name     string `json:"name"`
+		UUID     string `json:"uuid"`
+		Platform string `json:"platform"`
 	}
 
 	var req Request
@@ -1654,16 +1737,25 @@ func approveProxyPlayer(c *fiber.Ctx) error {
 		proxyClient = NewProxyClient()
 	}
 
-	if err := proxyClient.ApprovePlayer(req.Name); err != nil {
+	result, err := proxyClient.ApprovePlayer(req.Name)
+	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error":   "Failed to approve player",
 			"message": err.Error(),
 		})
 	}
 
+	if err := wm.UpsertApprovedPlayer(req.Name, req.UUID, req.Platform); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   "Player approved on proxy but failed to update dashboard",
+			"message": err.Error(),
+		})
+	}
+
 	return c.JSON(fiber.Map{
-		"success": true,
-		"message": "Player " + req.Name + " approved",
+		"success":       true,
+		"message":       result.Message,
+		"moved_to_main": result.MovedToMain,
 	})
 }
 
@@ -1683,13 +1775,13 @@ func getProxyStatus(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"online":          true,
-		"whitelisted":     status.WhitelistedCount,
-		"pending_bedrock": status.PendingCount,
-		"open_mode":       status.OpenMode,
+		"online":           true,
+		"whitelisted":      status.WhitelistedCount,
+		"pending_requests": status.PendingCount,
+		"open_mode":        status.OpenMode,
 		"hybrid_auth_mode": status.HybridAuthMode,
-		"main_server":     status.MainServer,
-		"limbo_server":    status.LimboServer,
+		"main_server":      status.MainServer,
+		"limbo_server":     status.LimboServer,
 	})
 }
 

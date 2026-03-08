@@ -52,8 +52,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listener, CommandExecutor {
 
-    private static final int STATUS_RETRY_TICKS = 20;
-    private static final int STATUS_MAX_RETRIES = 6;
+    private static final int STATUS_RETRY_TICKS = 5;
+    private static final int STATUS_MAX_RETRIES = 24;
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final int MAX_PASSWORD_LENGTH = 72;
     private static final Set<String> BEDROCK_PREFIXES = Set.of(".");
@@ -63,6 +63,7 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
     private final Type passwordRecordListType = new TypeToken<List<PasswordRecord>>() {}.getType();
     private final Map<String, PasswordRecord> passwordRecords = new ConcurrentHashMap<>();
     private final Map<UUID, PendingLogin> pendingLogins = new ConcurrentHashMap<>();
+    private final Set<UUID> authenticatedSessions = ConcurrentHashMap.newKeySet();
 
     private Path passwordFile;
     private volatile boolean warnedFastLoginMissing;
@@ -104,9 +105,17 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         pendingLogins.remove(player.getUniqueId());
+        authenticatedSessions.remove(player.getUniqueId());
 
         if (isBedrockPlayer(player)) {
             return;
+        }
+
+        PasswordRecord record = passwordRecords.get(normalizeName(player.getName()));
+        if (record != null && record.enabled) {
+            PendingLogin pending = new PendingLogin();
+            pending.name = player.getName();
+            pendingLogins.put(player.getUniqueId(), pending);
         }
 
         scheduleStatusCheck(player.getUniqueId(), 0);
@@ -115,6 +124,7 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         pendingLogins.remove(event.getPlayer().getUniqueId());
+        authenticatedSessions.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -258,13 +268,9 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
     }
 
     private boolean handleLogin(Player player, PasswordRecord record, String[] args) {
-        if (!requiresLogin(player)) {
-            player.sendMessage(Component.text("You do not need to log in right now.", NamedTextColor.YELLOW));
-            return true;
-        }
-
         if (record == null || !record.enabled) {
             pendingLogins.remove(player.getUniqueId());
+            authenticatedSessions.remove(player.getUniqueId());
             player.sendMessage(Component.text("This account does not have a password yet. Use /register <password> <confirm> if you want protection.", NamedTextColor.YELLOW));
             return true;
         }
@@ -279,6 +285,7 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
             return true;
         }
 
+        authenticatedSessions.add(player.getUniqueId());
         pendingLogins.remove(player.getUniqueId());
         player.sendMessage(Component.text("Login successful. Have fun!", NamedTextColor.GREEN));
         player.showTitle(Title.title(
@@ -344,12 +351,17 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
             }
 
             if (identity == JavaIdentity.PREMIUM) {
+                authenticatedSessions.remove(player.getUniqueId());
                 pendingLogins.remove(player.getUniqueId());
                 return;
             }
 
             PasswordRecord record = passwordRecords.get(normalizeName(player.getName()));
             if (record != null && record.enabled) {
+                if (authenticatedSessions.contains(player.getUniqueId())) {
+                    pendingLogins.remove(player.getUniqueId());
+                    return;
+                }
                 PendingLogin pending = new PendingLogin();
                 pending.name = player.getName();
                 pendingLogins.put(player.getUniqueId(), pending);
@@ -357,6 +369,7 @@ public final class OptionalAuthGuardPlugin extends JavaPlugin implements Listene
                 return;
             }
 
+            authenticatedSessions.remove(player.getUniqueId());
             pendingLogins.remove(player.getUniqueId());
             sendUnprotectedWarning(player);
         }, STATUS_RETRY_TICKS);
