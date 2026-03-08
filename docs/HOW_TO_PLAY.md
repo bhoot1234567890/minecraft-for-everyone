@@ -1,6 +1,8 @@
 # How to Play - Minecraft Server Guide
 
-Welcome! This guide will help you get started playing on our Minecraft server. We support both **Java Edition** (PC) and **Bedrock Edition** (mobile, console, Windows 10/11).
+**Any device. Any version.** Play on PC, Mac, Linux, Mobile, Console, or Windows - if it runs Minecraft, you can play!
+
+We support both **Java Edition** (PC) and **Bedrock Edition** (mobile, console, Windows 10/11). **Use the latest version of Minecraft for the best experience.**
 
 ---
 
